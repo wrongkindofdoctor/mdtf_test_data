@@ -25,6 +25,18 @@ pip install .
 ```
 mdtf-coarsen.py 
 usage: mdtf-coarsen.py [-h] [-r REGRID_METHOD] [-o OUTFILE] [-O] infile
+
+Coarsen a NetCDF file.
+
+positional arguments:
+  infile                Path to input NetCDF file
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -r REGRID_METHOD      xESMF regridding method
+  -o OUTFILE, --outfile OUTFILE
+                        Filename of output NetCDF file
+  -O                    Overwrite existing file
 ```
 Notes: 
 * The tool only supports standard grids with dimensions name `lat` and `lon` for now
