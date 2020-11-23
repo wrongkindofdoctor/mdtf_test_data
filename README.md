@@ -1,3 +1,5 @@
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/jkrasting/mdtf_data_decimator.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jkrasting/mdtf_data_decimator/alerts/) [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/jkrasting/mdtf_data_decimator.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jkrasting/mdtf_data_decimator/context:python)
+
 # MDTF Diagnostics Coarse Resolution Test Data
 Package to coarsen input data for MDTF Diagnostics
 
