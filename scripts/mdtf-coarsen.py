@@ -36,6 +36,12 @@ def parse():
         "-o", "--outfile", default=None, type=str, help="Filename of output NetCDF file"
     )
     parser.add_argument(
+        "--dx", default=10.0, type=float, help="Longitude grid spacing in degrees"
+    )
+    parser.add_argument(
+        "--dy", default=10.0, type=float, help="Latitude grid spacing in degrees"
+    )
+    parser.add_argument(
         "-O", dest="overwrite", action="store_true", help="Overwrite existing file"
     )
     parser.add_argument("infile", type=str, help="Path to input NetCDF file")
@@ -47,7 +53,9 @@ if __name__ == "__main__":
     _infile = os.path.abspath(args.infile)
     print(_infile)
     dset = xr.open_dataset(_infile)
-    dset_out = regrid_lat_lon_dataset(dset, method=args.regrid_method)
+    dset_out = regrid_lat_lon_dataset(
+        dset, dlon=args.dx, dlat=args.dy, method=args.regrid_method
+    )
     _outfile = args.outfile if args.outfile is not None else "out.nc"
 
     encoding = {}
