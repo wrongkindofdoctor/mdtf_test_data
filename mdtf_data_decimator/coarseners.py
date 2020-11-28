@@ -9,7 +9,7 @@ import xarray as xr
 import xesmf as xe
 
 
-def construct_rect_grid(dlon, dlat):
+def construct_rect_grid(dlon, dlat, add_attrs=False):
     """Generate a rectilinear grid based on values of dx and dy
 
     Parameters
@@ -18,6 +18,8 @@ def construct_rect_grid(dlon, dlat):
         Grid spacing in the x-dimension (longitude)
     dlat : float
         Grid spacing in the y-dimension (latitude)
+    add_attrs : bool, optional
+        Include lat and lon variable attributes, by default False
 
     Returns
     -------
@@ -40,11 +42,13 @@ def construct_rect_grid(dlon, dlat):
     lat = np.arange(-90.0 + (dlat / 2.0), 90.0, dlat)
     lon = np.arange(0.0 + (dlon / 2.0), 360.0, dlon)
 
-    dset = xr.Dataset(
-        {
-            "lat": (["lat"], lat),
-            "lon": (["lon"], lon),
-        }
+    dset = xr.Dataset({"lat": (["lat"], lat), "lon": (["lon"], lon)})
+
+    dset["lat"].attrs = (
+        {"long_name": "latitude", "units": "degrees_north"} if add_attrs else {}
+    )
+    dset["lon"].attrs = (
+        {"long_name": "longitude", "units": "degrees_east"} if add_attrs else {}
     )
 
     return dset

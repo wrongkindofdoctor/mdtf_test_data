@@ -15,5 +15,5 @@ setup(
     keywords="",
     url="https://github.com/jkrasting/mdtf_data_decimator",
     packages=find_packages(),
-    scripts=["scripts/mdtf-coarsen.py"],
+    scripts=["scripts/mdtf-coarsen.py","scripts/ncar_synthetic.py"],
 )
