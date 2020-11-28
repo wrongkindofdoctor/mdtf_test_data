@@ -7,7 +7,7 @@ is_travis = "TRAVIS" in os.environ
 
 setup(
     name="mdtf_test_data",
-    version="0.1.0",
+    version="0.0.1",
     author="John Krasting",
     author_email="John.Krasting@noaa.gov",
     description=("Tools for working with MDTF Diagnostics test data sets"),
