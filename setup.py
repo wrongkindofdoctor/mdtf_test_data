@@ -1,4 +1,4 @@
-""" setup for mdtf_data_decimator """
+""" setup for mdtf_test_data """
 from setuptools import setup, find_packages
 import os
 
@@ -6,14 +6,14 @@ import os
 is_travis = "TRAVIS" in os.environ
 
 setup(
-    name="mdtf_data_decimator",
-    version="0.0.1",
+    name="mdtf_test_data",
+    version="0.1.0",
     author="John Krasting",
     author_email="John.Krasting@noaa.gov",
-    description=("A tool to coarsen inout data for MDTF Diagnostics"),
+    description=("Tools for working with MDTF Diagnostics test data sets"),
     license="LGPLv3",
     keywords="",
-    url="https://github.com/jkrasting/mdtf_data_decimator",
+    url="https://github.com/jkrasting/mdtf_test_data",
     packages=find_packages(),
-    scripts=["scripts/mdtf-coarsen.py","scripts/ncar_synthetic.py"],
+    scripts=["scripts/mdtf-coarsen.py", "scripts/ncar_synthetic.py"],
 )

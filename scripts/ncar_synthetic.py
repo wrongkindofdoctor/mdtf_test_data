@@ -2,7 +2,7 @@
 
 import os
 
-import mdtf_data_decimator as td
+import mdtf_test_data as td
 
 DLON = 20
 DLAT = 20

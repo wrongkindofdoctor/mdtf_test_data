@@ -6,7 +6,7 @@ import warnings
 
 import xarray as xr
 
-from mdtf_data_decimator.coarseners import regrid_lat_lon_dataset
+from mdtf_test_data.coarseners import regrid_lat_lon_dataset
 
 # Newer versions of xESMF are throwing an error:
 #     site-packages/xesmf/frontend.py:450: FutureWarning: ``output_sizes``
