@@ -51,7 +51,6 @@ def generate_daily_time_axis(startyear, nyears):
         time and time_bnds xarray DataArray types
     """
 
-    ndays = 365 * nyears
     daysinmonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     months = list(np.arange(1, 13))
     days = [np.arange(1, daysinmonth[n] + 1) for n, x in enumerate(months)]
@@ -103,7 +102,6 @@ def generate_hourly_time_axis(startyear, nyears, dhour):
         time and time_bnds xarray DataArray types
     """
 
-    ndays = 365 * nyears
     nhours = int(24 / dhour)
     hours = list(np.arange(0, 24, dhour))
     hours = hours * 365 * nyears
@@ -147,7 +145,7 @@ def generate_hourly_time_axis(startyear, nyears, dhour):
     return time, time_bnds
 
 
-def generate_monthly_time_axis(startyear, nyears, format="ncar"):
+def generate_monthly_time_axis(startyear, nyears, dataformat="ncar"):
     """Construct a monthly noleap time dimension with associated bounds
 
     Parameters
@@ -163,16 +161,16 @@ def generate_monthly_time_axis(startyear, nyears, format="ncar"):
         time and time_bnds xarray DataArray types
     """
 
-    nyears = (nyears + 1) if format == "ncar" else nyears
+    nyears = (nyears + 1) if dataformat == "ncar" else nyears
 
     years = np.arange(startyear, startyear + nyears)
     years = [year for year in years for x in range(12)]
     months = list(np.arange(1, 13)) * nyears
-    days = 1 if format == "ncar" else 15
+    days = 1 if dataformat == "ncar" else 15
     days = [days] * len(months)
     timetuple = list(zip(years, months, days))
     times = [cftime.DatetimeNoLeap(*x, calendar="noleap") for x in timetuple]
-    times = times[1:-11] if format == "ncar" else times
+    times = times[1:-11] if dataformat == "ncar" else times
     time = xr.DataArray(
         times,
         dims={"time": times},
@@ -185,7 +183,7 @@ def generate_monthly_time_axis(startyear, nyears, format="ncar"):
     bounds = [cftime.DatetimeNoLeap(*x, calendar="noleap") for x in timetuple]
     bounds = bounds + [cftime.DatetimeNoLeap(startyear + nyears, 1, 1)]
     bounds = list(zip(bounds[0:-1], bounds[1::]))
-    bounds = bounds[0:-12] if format == "ncar" else bounds
+    bounds = bounds[0:-12] if dataformat == "ncar" else bounds
     nbnds = np.array([0, 1])
     time_bnds = xr.DataArray(
         bounds,
@@ -197,7 +195,7 @@ def generate_monthly_time_axis(startyear, nyears, format="ncar"):
 
 
 def generate_ncar_dataset(
-    stats, dlon, dlat, startyear, nyears, varname, timeres="mon", attrs={}
+    stats, dlon, dlat, startyear, nyears, varname, timeres="mon", attrs=None
 ):
     """Generates xarray dataset of syntheic data in NCAR format
 
@@ -216,7 +214,7 @@ def generate_ncar_dataset(
     varname : str
         Variable name in output dataset
     attrs : dict, optional
-        Variable attributes, by default {}
+        Variable attributes, by default None
 
     Returns
     -------
@@ -224,10 +222,12 @@ def generate_ncar_dataset(
         Dataset of synthetic data
     """
 
-    ds = construct_rect_grid(dlon, dlat, add_attrs=True)
-    lat = ds.lat
-    lon = ds.lon
-    xyshape = (len(ds["lat"]), len(ds["lon"]))
+    attrs = {} if attrs is None else attrs
+
+    dset = construct_rect_grid(dlon, dlat, add_attrs=True)
+    lat = dset.lat
+    lon = dset.lon
+    xyshape = (len(dset["lat"]), len(dset["lon"]))
 
     if timeres == "mon":
         time, time_bnds = generate_monthly_time_axis(startyear, nyears)
@@ -241,35 +241,35 @@ def generate_ncar_dataset(
         print(timeres)
         raise ValueError("Unknown time resolution requested")
 
-    ds["time"] = time
-    ds["time_bnds"] = time_bnds
+    dset["time"] = time
+    dset["time_bnds"] = time_bnds
 
     dates = np.array([int(x.strftime("%Y%m%d")) for x in time.values])
-    ds["date"] = xr.DataArray(
+    dset["date"] = xr.DataArray(
         dates, dims={"time": (time)}, attrs={"long_name": "current date (YYYYMMDD)"}
     )
 
     stats = [stats] if not isinstance(stats, list) else stats
     if len(stats) > 1:
         lev, hyam, hybm = ncar_hybrid_coord()
-        ds["lev"] = lev
-        ds["hyam"] = hyam
-        ds["hybm"] = hybm
+        dset["lev"] = lev
+        dset["hyam"] = hyam
+        dset["hybm"] = hybm
 
     data = generate_random_array(xyshape, len(time), stats)
     data = data.squeeze()
 
     if len(data.shape) == 4:
         assert data.shape[1] == len(
-            ds["lev"]
+            dset["lev"]
         ), "Length of stats must match number of levels"
-        ds[varname] = xr.DataArray(data, coords=(time, lev, lat, lon), attrs=attrs)
+        dset[varname] = xr.DataArray(data, coords=(time, lev, lat, lon), attrs=attrs)
     else:
-        ds[varname] = xr.DataArray(data, coords=(time, lat, lon), attrs=attrs)
+        dset[varname] = xr.DataArray(data, coords=(time, lat, lon), attrs=attrs)
 
-    ds = ds.drop("nbnds")
+    dset = dset.drop("nbnds")
 
-    return ds
+    return dset
 
 
 def generate_random_array(xyshape, ntimes, stats, dtype="float32"):
@@ -290,8 +290,8 @@ def generate_random_array(xyshape, ntimes, stats, dtype="float32"):
     stats = [stats] if not isinstance(stats, list) else stats
 
     data = []
-    for n in range(ntimes):
-        np.random.seed(n)
+    for time in range(ntimes):
+        np.random.seed(time)
         data.append(np.array([np.random.normal(x[0], x[1], xyshape) for x in stats]))
 
     return np.array(data).astype(dtype)
