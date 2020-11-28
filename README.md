@@ -1,10 +1,10 @@
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/jkrasting/mdtf_data_decimator.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jkrasting/mdtf_data_decimator/alerts/) [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/jkrasting/mdtf_data_decimator.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jkrasting/mdtf_data_decimator/context:python)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/jkrasting/mdtf_test_data.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jkrasting/mdtf_test_data/alerts/) [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/jkrasting/mdtf_test_data.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jkrasting/mdtf_test_data/context:python)
 
-# MDTF Diagnostics Coarse Resolution Test Data
-Package to coarsen input data for MDTF Diagnostics
+# MDTF Diagnostics Test Data Tools
+Package to work with test input datasets for MDTF Diagnostics
 
 ## Overview
-This package is designed to coarsen NetCDF files for generating test datasets that can be used with the MDTF Diagnostics package.  
+This package is designed to coarsen NetCDF files for generating test datasets and produce synthetic datasets on-the-fly that can be used for testing the MDTF Diagnostics package.  
 
 ## Requirements
 * xarray
@@ -14,12 +14,12 @@ This package is designed to coarsen NetCDF files for generating test datasets th
 
 ## Getting the code
 ```
-git clone https://github.com/jkrasting/mdtf_data_decimator.git
+git clone https://github.com/jkrasting/mdtf_test_data.git
 ```
 
 ## Installation
 ```
-cd mdtf_data_decimator
+cd mdtf_test_data
 pip install .
 ```
 
@@ -45,4 +45,4 @@ Notes:
 * Any xESMF regrid method may be passed with the `-r` option
 
 ## Getting Help
-Submit a [GitHub Issue](https://github.com/jkrasting/mdtf_data_decimator/issues)
+Submit a [GitHub Issue](https://github.com/jkrasting/mdtf_test_data/issues)
