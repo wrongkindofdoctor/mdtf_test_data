@@ -18,6 +18,7 @@ import numpy as np
 
 from mdtf_test_data.coarsen import construct_rect_grid
 
+
 def dataset_stats(filename, var=None):
     """Prints statistics and attributes for a NetCDF file
 
@@ -39,7 +40,7 @@ def dataset_stats(filename, var=None):
     dset.close()
 
 
-def generate_daily_time_axis(startyear, nyears):
+def generate_daily_time_axis(startyear, nyears, timefmt="ncar"):
     """Construct a daily noleap time dimension with associated bounds
 
     Parameters
@@ -48,6 +49,8 @@ def generate_daily_time_axis(startyear, nyears):
         Start year for requested time axis
     nyears : int
         Number of years in requested time axis
+    timefmt : str, optional
+        Time axis format, either "gfdl" or "ncar", "ncar" by default
 
     Returns
     -------
@@ -66,23 +69,44 @@ def generate_daily_time_axis(startyear, nyears):
     years = list(np.arange(startyear, startyear + nyears))
     years = [[years[x]] * 365 for x in range(0, len(years))]
     years = [item for sublist in years for item in sublist]
-    timetuple = list(zip(years, months, days))
+
+    if timefmt == "gfdl":
+        hours = [12] * len(days)
+        time_attrs = {
+            "long_name": "time",
+            "cartesian_axis": "T",
+            "calendar_type": "noleap",
+            "bounds": "time_bnds",
+        }
+    else:
+        hours = [0] * len(days)
+        time_attrs = {"long_name": "time", "bounds": "time_bnds"}
+
+    timetuple = list(zip(years, months, days, hours))
     times = [cftime.DatetimeNoLeap(*x, calendar="noleap") for x in timetuple]
     time = xr.DataArray(
         times,
         dims={"time": times},
         coords={"time": (times)},
-        attrs={"long_name": "time", "bounds": "time_bnds"},
+        attrs=time_attrs,
     )
+
+    nbnds = np.array([0, 1])
+    if timefmt == "gfdl":
+        coords = (time, ("bnds", nbnds))
+        bnds_attrs = {"long_name": "time axis boundaries"}
+    else:
+        coords = (time, ("nbnds", nbnds))
+        bnds_attrs = {"long_name": "time interval endpoints"}
 
     timetuple = list(zip(years, months, days)) + [(startyear + nyears, 1, 1)]
     bounds = [cftime.DatetimeNoLeap(*x, calendar="noleap") for x in timetuple]
     bounds = list(zip(bounds[0:-1], bounds[1::]))
-    nbnds = np.array([0, 1])
+
     time_bnds = xr.DataArray(
         bounds,
-        coords=(time, ("nbnds", nbnds)),
-        attrs={"long_name": "time interval endpoints"},
+        coords=coords,
+        attrs=bnds_attrs,
     )
 
     return time, time_bnds

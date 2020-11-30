@@ -9,7 +9,7 @@ import xarray as xr
 import xesmf as xe
 
 
-def construct_rect_grid(dlon, dlat, add_attrs=False):
+def construct_rect_grid(dlon, dlat, add_attrs=False, attr_fmt="ncar", bounds=False):
     """Generate a rectilinear grid based on values of dx and dy
 
     Parameters
@@ -44,12 +44,57 @@ def construct_rect_grid(dlon, dlat, add_attrs=False):
 
     dset = xr.Dataset({"lat": (["lat"], lat), "lon": (["lon"], lon)})
 
-    dset["lat"].attrs = (
-        {"long_name": "latitude", "units": "degrees_north"} if add_attrs else {}
-    )
-    dset["lon"].attrs = (
-        {"long_name": "longitude", "units": "degrees_east"} if add_attrs else {}
-    )
+    if bounds:
+        lat_bnds = np.arange(-90.0, 90.0 + (dlat / 2.0), dlat)
+        lon_bnds = np.arange(0.0, 360.0 + (dlon / 2.0), dlon)
+
+        lat_bnds = np.array(list(zip(lat_bnds[0:-1], lat_bnds[1::])))
+        lon_bnds = np.array(list(zip(lon_bnds[0:-1], lon_bnds[1::])))
+
+        bnds = np.array([0, 1])
+
+        dset["lat_bnds"] = xr.DataArray(lat_bnds, coords=(dset.lat, ("bnds", bnds)))
+        dset["lon_bnds"] = xr.DataArray(lon_bnds, coords=(dset.lon, ("bnds", bnds)))
+
+        dset = dset.drop("bnds")
+
+    if attr_fmt == "ncar":
+        dset["lat"].attrs = (
+            {"long_name": "latitude", "units": "degrees_north"} if add_attrs else {}
+        )
+        dset["lon"].attrs = (
+            {"long_name": "longitude", "units": "degrees_east"} if add_attrs else {}
+        )
+
+    elif attr_fmt == "gfdl":
+        dset["lat"].attrs = (
+            {"long_name": "latitude", "units": "degrees_N", "cartesian_axis": "Y"}
+            if add_attrs
+            else {}
+        )
+        dset["lon"].attrs = (
+            {"long_name": "longitude", "units": "degrees_E", "cartesian_axis": "X"}
+            if add_attrs
+            else {}
+        )
+
+        if bounds:
+            dset["lat"].attrs["bounds"] = "lat_bnds"
+            dset["lon"].attrs["bounds"] = "lon_bnds"
+
+            dset["lat_bnds"].attrs = (
+                {"long_name": "latitude bounds", "cartesian_axis": "Y"}
+                if add_attrs
+                else {}
+            )
+            dset["lon_bnds"].attrs = (
+                {"long_name": "longitude bounds", "cartesian_axis": "X"}
+                if add_attrs
+                else {}
+            )
+
+    else:
+        raise ValueError("Unknown model attribute format")
 
     return dset
 
