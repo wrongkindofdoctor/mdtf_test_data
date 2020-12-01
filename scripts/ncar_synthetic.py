@@ -20,7 +20,7 @@ os.makedirs(f"{CASENAME}/1hr")
 print("Generating monthly data ...")
 
 OUTFILE = "Z3"
-attrs = attrs = {
+attrs = {
     "mdims": 1,
     "units": "m",
     "long_name": "Geopotential Height (above sea level)",
