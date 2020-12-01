@@ -588,21 +588,27 @@ def ncar_hybrid_coord():
         "formula_terms": "a: hyam b: hybm p0: P0 ps: PS",
     }
 
-    lev = xr.DataArray(lev, dims={"lev": lev}, coords={"lev": (lev)}, attrs=lev_attrs)
-    hyam = xr.DataArray(
+    dset_out = xr.Dataset()
+
+    dset_out["hyam"] = xr.DataArray(
         hyam,
         dims={"lev": lev},
         coords={"lev": (lev)},
         attrs={"long_name": "hybrid A coefficient at layer midpoints"},
     )
-    hybm = xr.DataArray(
+
+    dset_out["hybm"] = xr.DataArray(
         hybm,
         dims={"lev": lev},
         coords={"lev": (lev)},
         attrs={"long_name": "hybrid B coefficient at layer midpoints"},
     )
 
-    return lev, hyam, hybm
+    dset_out["lev"] = xr.DataArray(
+        lev, dims={"lev": lev}, coords={"lev": (lev)}, attrs=lev_attrs
+    )
+
+    return dset_out
 
 
 def write_to_netcdf(dset_out, outfile, time_dtype="float"):
