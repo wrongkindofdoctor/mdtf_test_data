@@ -19,7 +19,7 @@ import numpy as np
 from mdtf_test_data.coarsen import construct_rect_grid
 
 
-def dataset_stats(filename, var=None):
+def dataset_stats(filename, var=None, limit=None):
     """Prints statistics and attributes for a NetCDF file
 
     Parameters
@@ -29,14 +29,23 @@ def dataset_stats(filename, var=None):
     var : str, optional
         Variable to analyze (None prints a list of variables), by default None
     """
-    dset = xr.open_dataset(filename)
+    dset = xr.open_dataset(filename, use_cftime=True)
+    dset = dset.isel(time=slice(0, limit)) if limit is not None else dset
     if var is None:
         print(list(dset.variables))
     else:
         means = dset[var].mean(axis=(0, -2, -1)).values
         stds = dset[var].std(axis=(0, -2, -1)).values
+
+        means = [means] if means.shape == () else list(means)
+        stds = [stds] if stds.shape == () else list(stds)
+
+        means = [float(x) for x in means]
+        stds = [float(x) for x in stds]
+
         print(dset[var].attrs)
-        print(means, stds)
+        print(list(zip(means, stds)))
+
     dset.close()
 
 
