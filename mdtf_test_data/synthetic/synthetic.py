@@ -620,17 +620,17 @@ def write_to_netcdf(dset_out, outfile, time_dtype="float"):
     outfile : str, path-like
         Path to output file
     """
+
+    base_time_unit = (
+        dset_out.attrs["base_time_unit"]
+        if "base_time_unit" in list(dset_out.attrs.keys())
+        else "days since 0001-01-01"
+    )
+
     encoding = {}
     for var in list(dset_out.variables):
-        if var == "time":
-            dset_out[var].encoding["units"] = "days since 1975-01-01"
-            if time_dtype == "float":
-                dset_out[var].encoding["dtype"] = "float64"
-                dset_out[var].encoding["_FillValue"] = 1.0e20
-            elif time_dtype == "int":
-                dset_out[var].encoding["dtype"] = "i4"
-        elif var == "time_bnds":
-            dset_out[var].encoding["units"] = "days since 1975-01-01"
+        if var in ["time", "time_bnds", "average_T1", "average_T2"]:
+            dset_out[var].encoding["units"] = base_time_unit
             if time_dtype == "float":
                 dset_out[var].encoding["dtype"] = "float64"
                 dset_out[var].encoding["_FillValue"] = 1.0e20
@@ -645,6 +645,7 @@ def write_to_netcdf(dset_out, outfile, time_dtype="float"):
         else:
             dset_out[var].encoding["_FillValue"] = None
     dset_out.to_netcdf(outfile, encoding=encoding)
+
 
 def xr_times_from_tuples(timetuple, boundstuple, timefmt="ncar"):
     """[summary]
