@@ -88,7 +88,7 @@ stats = [
     (544.9365, 770.3126),
     (410.32043, 777.56665),
 ]
-ds_out = td.synthetic.generate_ncar_dataset(
+ds_out = td.synthetic.generate_synthetic_dataset(
     stats, DLON, DLAT, STARTYEAR, NYEARS, OUTFILE, timeres="mon", attrs=attrs
 )
 td.synthetic.write_to_netcdf(
@@ -98,7 +98,7 @@ td.synthetic.write_to_netcdf(
 OUTFILE = "PS"
 attrs = {"units": "Pa", "long_name": "Surface pressure", "cell_methods": "time: mean"}
 stats = [(96888.24, 8931.88)]
-ds_out = td.synthetic.generate_ncar_dataset(
+ds_out = td.synthetic.generate_synthetic_dataset(
     stats, DLON, DLAT, STARTYEAR, NYEARS, OUTFILE, timeres="mon", attrs=attrs
 )
 td.synthetic.write_to_netcdf(
@@ -120,7 +120,7 @@ attrs = {
     "Sampling_Sequence": "rad_lwsw",
 }
 stats = (224.86646, 48.011627)
-ds_out = td.synthetic.generate_ncar_dataset(
+ds_out = td.synthetic.generate_synthetic_dataset(
     stats, DLON, DLAT, STARTYEAR, 7, OUTFILE, timeres="day", attrs=attrs
 )
 td.synthetic.write_to_netcdf(ds_out, f"{CASENAME}/day/{CASENAME}.{OUTFILE}.day.nc")
@@ -133,7 +133,7 @@ attrs = {
     "cell_methods": "time: mean",
 }
 stats = (-0.00053095096, 0.09604603)
-ds_out = td.synthetic.generate_ncar_dataset(
+ds_out = td.synthetic.generate_synthetic_dataset(
     stats, DLON, DLAT, STARTYEAR, 7, OUTFILE, timeres="day", attrs=attrs
 )
 td.synthetic.write_to_netcdf(ds_out, f"{CASENAME}/day/{CASENAME}.{OUTFILE}.day.nc")
@@ -146,7 +146,7 @@ attrs = {
     "cell_methods": "time: mean",
 }
 stats = (2.929617e-08, 5.7031237e-08)
-ds_out = td.synthetic.generate_ncar_dataset(
+ds_out = td.synthetic.generate_synthetic_dataset(
     stats, DLON, DLAT, STARTYEAR, 7, OUTFILE, timeres="day", attrs=attrs
 )
 td.synthetic.write_to_netcdf(ds_out, f"{CASENAME}/day/{CASENAME}.{OUTFILE}.day.nc")
@@ -161,7 +161,7 @@ attrs = {
     "time": 0.0,
 }
 stats = (219.75917, 8.456115)
-ds_out = td.synthetic.generate_ncar_dataset(
+ds_out = td.synthetic.generate_synthetic_dataset(
     stats, DLON, DLAT, STARTYEAR, 7, OUTFILE, timeres="day", attrs=attrs
 )
 td.synthetic.write_to_netcdf(ds_out, f"{CASENAME}/day/{CASENAME}.{OUTFILE}.day.nc")
@@ -174,7 +174,7 @@ attrs = {
     "cell_methods": "time: mean",
 }
 stats = (13.888344, 17.738035)
-ds_out = td.synthetic.generate_ncar_dataset(
+ds_out = td.synthetic.generate_synthetic_dataset(
     stats, DLON, DLAT, STARTYEAR, 7, OUTFILE, timeres="day", attrs=attrs
 )
 td.synthetic.write_to_netcdf(ds_out, f"{CASENAME}/day/{CASENAME}.{OUTFILE}.day.nc")
@@ -189,7 +189,7 @@ attrs = {
     "p": 250.0,
 }
 stats = (12.897135, 17.588223)
-ds_out = td.synthetic.generate_ncar_dataset(
+ds_out = td.synthetic.generate_synthetic_dataset(
     stats, DLON, DLAT, STARTYEAR, 7, OUTFILE, timeres="day", attrs=attrs
 )
 td.synthetic.write_to_netcdf(ds_out, f"{CASENAME}/day/{CASENAME}.{OUTFILE}.day.nc")
@@ -202,7 +202,7 @@ attrs = {
     "cell_methods": "time: mean",
 }
 stats = (1.4072706, 8.031601)
-ds_out = td.synthetic.generate_ncar_dataset(
+ds_out = td.synthetic.generate_synthetic_dataset(
     stats, DLON, DLAT, STARTYEAR, 7, OUTFILE, timeres="day", attrs=attrs
 )
 td.synthetic.write_to_netcdf(ds_out, f"{CASENAME}/day/{CASENAME}.{OUTFILE}.day.nc")
@@ -214,7 +214,7 @@ attrs = {
     "cell_methods": "time: mean",
 }
 stats = (-0.10729608, 11.274971)
-ds_out = td.synthetic.generate_ncar_dataset(
+ds_out = td.synthetic.generate_synthetic_dataset(
     stats, DLON, DLAT, STARTYEAR, 7, OUTFILE, timeres="day", attrs=attrs
 )
 td.synthetic.write_to_netcdf(ds_out, f"{CASENAME}/day/{CASENAME}.{OUTFILE}.day.nc")
@@ -231,7 +231,7 @@ attrs = {
     "cell_methods": "time: mean",
 }
 stats = (0.06057823, 5.5419374)
-ds_out = td.synthetic.generate_ncar_dataset(
+ds_out = td.synthetic.generate_synthetic_dataset(
     stats, DLON, DLAT, STARTYEAR, 7, OUTFILE, timeres="day", attrs=attrs
 )
 td.synthetic.write_to_netcdf(ds_out, f"{CASENAME}/day/{CASENAME}.{OUTFILE}.day.nc")
@@ -246,7 +246,7 @@ attrs = {
     "time": 0.0,
 }
 stats = (10259.143, 568.0995)
-ds_out = td.synthetic.generate_ncar_dataset(
+ds_out = td.synthetic.generate_synthetic_dataset(
     stats, DLON, DLAT, STARTYEAR, 7, OUTFILE, timeres="day", attrs=attrs
 )
 td.synthetic.write_to_netcdf(ds_out, f"{CASENAME}/day/{CASENAME}.{OUTFILE}.day.nc")
@@ -264,7 +264,7 @@ attrs = {
     "cell_methods": "time: mean",
 }
 stats = (2.6630838e-08, 6.908e-08)
-ds_out = td.synthetic.generate_ncar_dataset(
+ds_out = td.synthetic.generate_synthetic_dataset(
     stats, DLON, DLAT, STARTYEAR, 7, OUTFILE, timeres="3hr", attrs=attrs
 )
 td.synthetic.write_to_netcdf(ds_out, f"{CASENAME}/3hr/{CASENAME}.{OUTFILE}.3hr.nc")
@@ -282,7 +282,7 @@ attrs = {
     "long_name": "Total (convective and large-scale) precipitation rate (liq + ice)",
 }
 stats = (2.6785912e-08, 7.193412e-08)
-ds_out = td.synthetic.generate_ncar_dataset(
+ds_out = td.synthetic.generate_synthetic_dataset(
     stats, DLON, DLAT, STARTYEAR, 7, OUTFILE, timeres="1hr", attrs=attrs
 )
 ds_out = ds_out.isel(time=slice(0, 2130))
@@ -294,7 +294,7 @@ attrs = {
     "long_name": "Vertically integrated specific humidity (surface to 200 mb)",
 }
 stats = (18.124813, 15.1677885)
-ds_out = td.synthetic.generate_ncar_dataset(
+ds_out = td.synthetic.generate_synthetic_dataset(
     stats, DLON, DLAT, STARTYEAR, 7, OUTFILE, timeres="1hr", attrs=attrs
 )
 ds_out = ds_out.isel(time=slice(0, 2130))
@@ -306,7 +306,7 @@ attrs = {
     "long_name": "Vertically integrated saturated specific humidity (surface to 200 mb)",
 }
 stats = (30.223436, 24.573318)
-ds_out = td.synthetic.generate_ncar_dataset(
+ds_out = td.synthetic.generate_synthetic_dataset(
     stats, DLON, DLAT, STARTYEAR, 7, OUTFILE, timeres="1hr", attrs=attrs
 )
 ds_out = ds_out.isel(time=slice(0, 2130))
@@ -318,7 +318,7 @@ attrs = {
     "long_name": "Vertically integrated temperature (surface to 200 mb)",
 }
 stats = (254.17484, 14.091375)
-ds_out = td.synthetic.generate_ncar_dataset(
+ds_out = td.synthetic.generate_synthetic_dataset(
     stats, DLON, DLAT, STARTYEAR, 7, OUTFILE, timeres="1hr", attrs=attrs
 )
 ds_out = ds_out.isel(time=slice(0, 2130))

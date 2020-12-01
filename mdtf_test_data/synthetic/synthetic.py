@@ -5,7 +5,7 @@ ___all__ = [
     "generate_daily_time_axis",
     "generate_hourly_time_axis",
     "generate_monthly_time_axis",
-    "generate_ncar_dataset",
+    "generate_synthetic_dataset",
     "generate_random_array",
     "ncar_hybrid_coord",
     "write_to_netcdf",
@@ -163,8 +163,8 @@ def generate_monthly_time_axis(startyear, nyears, timefmt="ncar"):
     return xr_times_from_tuples(timetuple, boundstuple, timefmt=timefmt)
 
 
-def generate_ncar_dataset(
-    stats, dlon, dlat, startyear, nyears, varname, timeres="mon", attrs=None
+def generate_synthetic_dataset(
+    stats, dlon, dlat, startyear, nyears, varname, timeres="mon", attrs=None, fmt="ncar"
 ):
     """Generates xarray dataset of syntheic data in NCAR format
 
@@ -184,6 +184,10 @@ def generate_ncar_dataset(
         Variable name in output dataset
     attrs : dict, optional
         Variable attributes, by default None
+    attrs : dict, optional
+        Variable attributes, by default None
+    attrs : dict, optional
+        Variable attributes, by default None
 
     Returns
     -------
@@ -193,50 +197,45 @@ def generate_ncar_dataset(
 
     attrs = {} if attrs is None else attrs
 
-    dset = construct_rect_grid(dlon, dlat, add_attrs=True)
+    dset = construct_rect_grid(dlon, dlat, add_attrs=True, attr_fmt=fmt)
     lat = dset.lat
     lon = dset.lon
     xyshape = (len(dset["lat"]), len(dset["lon"]))
 
     if timeres == "mon":
-        time, time_bnds = generate_monthly_time_axis(startyear, nyears)
+        ds_time = generate_monthly_time_axis(startyear, nyears, timefmt=fmt)
     elif timeres == "day":
-        time, time_bnds = generate_daily_time_axis(startyear, nyears)
+        ds_time = generate_daily_time_axis(startyear, nyears, timefmt=fmt)
     elif timeres == "3hr":
-        time, time_bnds = generate_hourly_time_axis(startyear, nyears, 3)
+        ds_time = generate_hourly_time_axis(startyear, nyears, 3, timefmt=fmt)
     elif timeres == "1hr":
-        time, time_bnds = generate_hourly_time_axis(startyear, nyears, 1)
+        ds_time = generate_hourly_time_axis(startyear, nyears, 1, timefmt=fmt)
     else:
         print(timeres)
         raise ValueError("Unknown time resolution requested")
 
-    dset["time"] = time
-    dset["time_bnds"] = time_bnds
-
-    dates = np.array([int(x.strftime("%Y%m%d")) for x in time.values])
-    dset["date"] = xr.DataArray(
-        dates, dims={"time": (time)}, attrs={"long_name": "current date (YYYYMMDD)"}
-    )
+    dset = ds_time.merge(dset)
+    time = dset["time"]
 
     stats = [stats] if not isinstance(stats, list) else stats
     if len(stats) > 1:
-        lev, hyam, hybm = ncar_hybrid_coord()
-        dset["lev"] = lev
-        dset["hyam"] = hyam
-        dset["hybm"] = hybm
+        if fmt == "ncar":
+            dset = dset.merge(ncar_hybrid_coord())
+            lev = dset.lev
+        elif fmt == "gfdl":
+            dset = dset.merge(gfdl_vertical_coord())
+            lev = dset.pfull
 
     data = generate_random_array(xyshape, len(time), stats)
     data = data.squeeze()
 
     if len(data.shape) == 4:
-        assert data.shape[1] == len(
-            dset["lev"]
-        ), "Length of stats must match number of levels"
+        assert data.shape[1] == len(lev), "Length of stats must match number of levels"
         dset[varname] = xr.DataArray(data, coords=(time, lev, lat, lon), attrs=attrs)
     else:
         dset[varname] = xr.DataArray(data, coords=(time, lat, lon), attrs=attrs)
 
-    dset = dset.drop("nbnds")
+    dset.attrs["convention"] = fmt
 
     return dset
 
