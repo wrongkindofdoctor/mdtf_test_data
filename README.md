@@ -24,6 +24,20 @@ pip install .
 ```
 
 ## Usage
+This package can be used to generate fully-synthetic datasets based on NCAR's 
+CESM2 and GFDL's CM4 model output that can be used to test the MDTF Diagnostics package.
+
+To generate NCAR CESM output in a directory called `NCAR.Synthetic`:
+```
+./ncar_synthetic.py
+```
+
+To generate GFDL CM4 output in a directory called `GFDL.Synthetic`:
+```
+./gfdl_synthetic.py
+```
+
+To coarsen an existing NetCDF file:
 ```
 mdtf-coarsen.py 
 usage: mdtf-coarsen.py [-h] [-r REGRID_METHOD] [-o OUTFILE] [-O] infile
@@ -41,7 +55,7 @@ optional arguments:
   -O                    Overwrite existing file
 ```
 Notes: 
-* The tool only supports standard grids with dimensions name `lat` and `lon` for now
+* The coarsening tool only supports standard grids with dimensions name `lat` and `lon` for now
 * Any xESMF regrid method may be passed with the `-r` option
 
 ## Getting Help

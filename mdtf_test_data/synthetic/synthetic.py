@@ -5,7 +5,7 @@ ___all__ = [
     "generate_daily_time_axis",
     "generate_hourly_time_axis",
     "generate_monthly_time_axis",
-    "generate_ncar_dataset",
+    "generate_synthetic_dataset",
     "generate_random_array",
     "ncar_hybrid_coord",
     "write_to_netcdf",
@@ -18,7 +18,8 @@ import numpy as np
 
 from mdtf_test_data.coarsen import construct_rect_grid
 
-def dataset_stats(filename, var=None):
+
+def dataset_stats(filename, var=None, limit=None):
     """Prints statistics and attributes for a NetCDF file
 
     Parameters
@@ -28,18 +29,27 @@ def dataset_stats(filename, var=None):
     var : str, optional
         Variable to analyze (None prints a list of variables), by default None
     """
-    dset = xr.open_dataset(filename)
+    dset = xr.open_dataset(filename, use_cftime=True)
+    dset = dset.isel(time=slice(0, limit)) if limit is not None else dset
     if var is None:
         print(list(dset.variables))
     else:
         means = dset[var].mean(axis=(0, -2, -1)).values
         stds = dset[var].std(axis=(0, -2, -1)).values
+
+        means = [means] if means.shape == () else list(means)
+        stds = [stds] if stds.shape == () else list(stds)
+
+        means = [float(x) for x in means]
+        stds = [float(x) for x in stds]
+
         print(dset[var].attrs)
-        print(means, stds)
+        print(list(zip(means, stds)))
+
     dset.close()
 
 
-def generate_daily_time_axis(startyear, nyears):
+def generate_daily_time_axis(startyear, nyears, timefmt="ncar"):
     """Construct a daily noleap time dimension with associated bounds
 
     Parameters
@@ -48,13 +58,14 @@ def generate_daily_time_axis(startyear, nyears):
         Start year for requested time axis
     nyears : int
         Number of years in requested time axis
+    timefmt : str, optional
+        Time axis format, either "gfdl" or "ncar", "ncar" by default
 
     Returns
     -------
     xarray.DataArray
         time and time_bnds xarray DataArray types
     """
-
     daysinmonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     months = list(np.arange(1, 13))
     days = [np.arange(1, daysinmonth[n] + 1) for n, x in enumerate(months)]
@@ -66,29 +77,19 @@ def generate_daily_time_axis(startyear, nyears):
     years = list(np.arange(startyear, startyear + nyears))
     years = [[years[x]] * 365 for x in range(0, len(years))]
     years = [item for sublist in years for item in sublist]
-    timetuple = list(zip(years, months, days))
-    times = [cftime.DatetimeNoLeap(*x, calendar="noleap") for x in timetuple]
-    time = xr.DataArray(
-        times,
-        dims={"time": times},
-        coords={"time": (times)},
-        attrs={"long_name": "time", "bounds": "time_bnds"},
-    )
 
-    timetuple = list(zip(years, months, days)) + [(startyear + nyears, 1, 1)]
-    bounds = [cftime.DatetimeNoLeap(*x, calendar="noleap") for x in timetuple]
-    bounds = list(zip(bounds[0:-1], bounds[1::]))
-    nbnds = np.array([0, 1])
-    time_bnds = xr.DataArray(
-        bounds,
-        coords=(time, ("nbnds", nbnds)),
-        attrs={"long_name": "time interval endpoints"},
-    )
+    if timefmt == "gfdl":
+        hours = [12] * len(days)
+    else:
+        hours = [0] * len(days)
 
-    return time, time_bnds
+    timetuple = list(zip(years, months, days, hours))
+    boundstuple = list(zip(years, months, days)) + [(startyear + nyears, 1, 1)]
+
+    return xr_times_from_tuples(timetuple, boundstuple, timefmt=timefmt)
 
 
-def generate_hourly_time_axis(startyear, nyears, dhour):
+def generate_hourly_time_axis(startyear, nyears, dhour, timefmt="ncar"):
     """Construct an hourly noleap time dimension with associated bounds
 
     Parameters
@@ -99,6 +100,8 @@ def generate_hourly_time_axis(startyear, nyears, dhour):
         Number of years in requested time axis
     dhour : int
         Delta skip for hours (e.g. 1 hour, 3 hours, 6 hours)
+    timefmt : str, optional
+        Time axis format, either "gfdl" or "ncar", "ncar" by default
 
     Returns
     -------
@@ -124,32 +127,17 @@ def generate_hourly_time_axis(startyear, nyears, dhour):
     years = [item for sublist in years for item in sublist]
     years = [item for item in years for i in range(nhours)]
     timetuple = list(zip(years, months, days, hours))
-    times = [cftime.DatetimeNoLeap(*x, calendar="noleap") for x in timetuple]
-    time = xr.DataArray(
-        times,
-        dims={"time": times},
-        coords={"time": (times)},
-        attrs={"long_name": "time", "bounds": "time_bnds"},
-    )
-
-    timetuple = (
+    boundstuple = (
         [(startyear, 1, 1, 0)]
         + list(zip(years, months, days, hours))
         + [(startyear + nyears, 1, 1, dhour)]
     )
-    bounds = [cftime.DatetimeNoLeap(*x, calendar="noleap") for x in timetuple]
-    bounds = list(zip(bounds[0:-1], bounds[1::]))[0:-1]
-    nbnds = np.array([0, 1])
-    time_bnds = xr.DataArray(
-        bounds,
-        coords=(time, ("nbnds", nbnds)),
-        attrs={"long_name": "time interval endpoints"},
-    )
+    boundstuple = boundstuple[0:-1]
 
-    return time, time_bnds
+    return xr_times_from_tuples(timetuple, boundstuple, timefmt=timefmt)
 
 
-def generate_monthly_time_axis(startyear, nyears, dataformat="ncar"):
+def generate_monthly_time_axis(startyear, nyears, timefmt="ncar"):
     """Construct a monthly noleap time dimension with associated bounds
 
     Parameters
@@ -158,6 +146,8 @@ def generate_monthly_time_axis(startyear, nyears, dataformat="ncar"):
         Start year for requested time axis
     nyears : int
         Number of years in requested time axis
+    timefmt : str, optional
+        Time axis format, either "gfdl" or "ncar", "ncar" by default
 
     Returns
     -------
@@ -165,41 +155,25 @@ def generate_monthly_time_axis(startyear, nyears, dataformat="ncar"):
         time and time_bnds xarray DataArray types
     """
 
-    nyears = (nyears + 1) if dataformat == "ncar" else nyears
+    nyears = nyears + 1
 
     years = np.arange(startyear, startyear + nyears)
     years = [year for year in years for x in range(12)]
     months = list(np.arange(1, 13)) * nyears
-    days = 1 if dataformat == "ncar" else 15
+    days = 1 if timefmt == "ncar" else 15
     days = [days] * len(months)
     timetuple = list(zip(years, months, days))
-    times = [cftime.DatetimeNoLeap(*x, calendar="noleap") for x in timetuple]
-    times = times[1:-11] if dataformat == "ncar" else times
-    time = xr.DataArray(
-        times,
-        dims={"time": times},
-        coords={"time": (times)},
-        attrs={"long_name": "time", "bounds": "time_bnds"},
-    )
+    timetuple = timetuple[1:-11] if timefmt == "ncar" else timetuple[0:-12]
 
     days = [1] * len(months)
-    timetuple = list(zip(years, months, days))
-    bounds = [cftime.DatetimeNoLeap(*x, calendar="noleap") for x in timetuple]
-    bounds = bounds + [cftime.DatetimeNoLeap(startyear + nyears, 1, 1)]
-    bounds = list(zip(bounds[0:-1], bounds[1::]))
-    bounds = bounds[0:-12] if dataformat == "ncar" else bounds
-    nbnds = np.array([0, 1])
-    time_bnds = xr.DataArray(
-        bounds,
-        coords=(time, ("nbnds", nbnds)),
-        attrs={"long_name": "time interval endpoints"},
-    )
+    boundstuple = list(zip(years, months, days))
+    boundstuple = boundstuple[0:-11]
 
-    return time, time_bnds
+    return xr_times_from_tuples(timetuple, boundstuple, timefmt=timefmt)
 
 
-def generate_ncar_dataset(
-    stats, dlon, dlat, startyear, nyears, varname, timeres="mon", attrs=None
+def generate_synthetic_dataset(
+    stats, dlon, dlat, startyear, nyears, varname, timeres="mon", attrs=None, fmt="ncar"
 ):
     """Generates xarray dataset of syntheic data in NCAR format
 
@@ -219,6 +193,10 @@ def generate_ncar_dataset(
         Variable name in output dataset
     attrs : dict, optional
         Variable attributes, by default None
+    attrs : dict, optional
+        Variable attributes, by default None
+    attrs : dict, optional
+        Variable attributes, by default None
 
     Returns
     -------
@@ -228,50 +206,45 @@ def generate_ncar_dataset(
 
     attrs = {} if attrs is None else attrs
 
-    dset = construct_rect_grid(dlon, dlat, add_attrs=True)
+    dset = construct_rect_grid(dlon, dlat, add_attrs=True, attr_fmt=fmt)
     lat = dset.lat
     lon = dset.lon
     xyshape = (len(dset["lat"]), len(dset["lon"]))
 
     if timeres == "mon":
-        time, time_bnds = generate_monthly_time_axis(startyear, nyears)
+        ds_time = generate_monthly_time_axis(startyear, nyears, timefmt=fmt)
     elif timeres == "day":
-        time, time_bnds = generate_daily_time_axis(startyear, nyears)
+        ds_time = generate_daily_time_axis(startyear, nyears, timefmt=fmt)
     elif timeres == "3hr":
-        time, time_bnds = generate_hourly_time_axis(startyear, nyears, 3)
+        ds_time = generate_hourly_time_axis(startyear, nyears, 3, timefmt=fmt)
     elif timeres == "1hr":
-        time, time_bnds = generate_hourly_time_axis(startyear, nyears, 1)
+        ds_time = generate_hourly_time_axis(startyear, nyears, 1, timefmt=fmt)
     else:
         print(timeres)
         raise ValueError("Unknown time resolution requested")
 
-    dset["time"] = time
-    dset["time_bnds"] = time_bnds
-
-    dates = np.array([int(x.strftime("%Y%m%d")) for x in time.values])
-    dset["date"] = xr.DataArray(
-        dates, dims={"time": (time)}, attrs={"long_name": "current date (YYYYMMDD)"}
-    )
+    dset = ds_time.merge(dset)
+    time = dset["time"]
 
     stats = [stats] if not isinstance(stats, list) else stats
     if len(stats) > 1:
-        lev, hyam, hybm = ncar_hybrid_coord()
-        dset["lev"] = lev
-        dset["hyam"] = hyam
-        dset["hybm"] = hybm
+        if fmt == "ncar":
+            dset = dset.merge(ncar_hybrid_coord())
+            lev = dset.lev
+        elif fmt == "gfdl":
+            dset = dset.merge(gfdl_vertical_coord())
+            lev = dset.pfull
 
     data = generate_random_array(xyshape, len(time), stats)
     data = data.squeeze()
 
     if len(data.shape) == 4:
-        assert data.shape[1] == len(
-            dset["lev"]
-        ), "Length of stats must match number of levels"
+        assert data.shape[1] == len(lev), "Length of stats must match number of levels"
         dset[varname] = xr.DataArray(data, coords=(time, lev, lat, lon), attrs=attrs)
     else:
         dset[varname] = xr.DataArray(data, coords=(time, lat, lon), attrs=attrs)
 
-    dset = dset.drop("nbnds")
+    dset.attrs["convention"] = fmt
 
     return dset
 
@@ -299,6 +272,116 @@ def generate_random_array(xyshape, ntimes, stats, dtype="float32"):
         data.append(np.array([np.random.normal(x[0], x[1], xyshape) for x in stats]))
 
     return np.array(data).astype(dtype)
+
+
+def gfdl_vertical_coord():
+    """Generates GFDL AM4 pressure coordinate
+
+    Returns
+    -------
+    xarray.DataArray
+        GFDL AM4 pressure levels and half levels
+    """
+
+    pfull = np.array(
+        [
+            2.164043,
+            5.845308,
+            10.74508,
+            17.106537,
+            25.113805,
+            35.221197,
+            48.137904,
+            64.560184,
+            85.114482,
+            110.419627,
+            141.09261,
+            177.729388,
+            220.892397,
+            271.066624,
+            328.516337,
+            392.785273,
+            461.947262,
+            532.465907,
+            600.430867,
+            663.107383,
+            719.307118,
+            768.814284,
+            811.846869,
+            848.836021,
+            880.346139,
+            906.995722,
+            929.394583,
+            948.128523,
+            963.73257,
+            976.687397,
+            987.392458,
+            996.109949,
+        ]
+    )
+
+    phalf = np.array(
+        [
+            1.0,
+            4.0,
+            8.186021,
+            13.788865,
+            20.917952,
+            29.836408,
+            41.217896,
+            55.792215,
+            74.201906,
+            97.047864,
+            124.966648,
+            158.549553,
+            198.396959,
+            245.027221,
+            298.888576,
+            360.040179,
+            427.458025,
+            498.243573,
+            568.220535,
+            633.836047,
+            693.266329,
+            745.991986,
+            792.097373,
+            831.921945,
+            865.977814,
+            894.872525,
+            919.22792,
+            939.635932,
+            956.672132,
+            970.827661,
+            982.570665,
+            992.23,
+            1000.0,
+        ]
+    )
+
+    pfull_attrs = {
+        "long_name": "ref full pressure level",
+        "units": "mb",
+        "cartesian_axis": "Z",
+        "positive": "down",
+        "edges": "phalf",
+    }
+
+    phalf_attrs = {
+        "long_name": "ref half pressure level",
+        "units": "mb",
+        "cartesian_axis": "Z",
+        "positive": "down",
+    }
+
+    dset_out = xr.Dataset()
+    dset_out["pfull"] = xr.DataArray(
+        pfull, dims={"pfull": pfull}, coords={"pfull": pfull}, attrs=pfull_attrs
+    )
+    dset_out["phalf"] = xr.DataArray(
+        phalf, dims={"phalf": phalf}, coords={"phalf": phalf}, attrs=phalf_attrs
+    )
+
+    return dset_out
 
 
 def ncar_hybrid_coord():
@@ -513,21 +596,27 @@ def ncar_hybrid_coord():
         "formula_terms": "a: hyam b: hybm p0: P0 ps: PS",
     }
 
-    lev = xr.DataArray(lev, dims={"lev": lev}, coords={"lev": (lev)}, attrs=lev_attrs)
-    hyam = xr.DataArray(
+    dset_out = xr.Dataset()
+
+    dset_out["hyam"] = xr.DataArray(
         hyam,
         dims={"lev": lev},
         coords={"lev": (lev)},
         attrs={"long_name": "hybrid A coefficient at layer midpoints"},
     )
-    hybm = xr.DataArray(
+
+    dset_out["hybm"] = xr.DataArray(
         hybm,
         dims={"lev": lev},
         coords={"lev": (lev)},
         attrs={"long_name": "hybrid B coefficient at layer midpoints"},
     )
 
-    return lev, hyam, hybm
+    dset_out["lev"] = xr.DataArray(
+        lev, dims={"lev": lev}, coords={"lev": (lev)}, attrs=lev_attrs
+    )
+
+    return dset_out
 
 
 def write_to_netcdf(dset_out, outfile, time_dtype="float"):
@@ -540,17 +629,17 @@ def write_to_netcdf(dset_out, outfile, time_dtype="float"):
     outfile : str, path-like
         Path to output file
     """
+
+    base_time_unit = (
+        dset_out.attrs["base_time_unit"]
+        if "base_time_unit" in list(dset_out.attrs.keys())
+        else "days since 0001-01-01"
+    )
+
     encoding = {}
     for var in list(dset_out.variables):
-        if var == "time":
-            dset_out[var].encoding["units"] = "days since 1975-01-01"
-            if time_dtype == "float":
-                dset_out[var].encoding["dtype"] = "float64"
-                dset_out[var].encoding["_FillValue"] = 1.0e20
-            elif time_dtype == "int":
-                dset_out[var].encoding["dtype"] = "i4"
-        elif var == "time_bnds":
-            dset_out[var].encoding["units"] = "days since 1975-01-01"
+        if var in ["time", "time_bnds", "average_T1", "average_T2"]:
+            dset_out[var].encoding["units"] = base_time_unit
             if time_dtype == "float":
                 dset_out[var].encoding["dtype"] = "float64"
                 dset_out[var].encoding["_FillValue"] = 1.0e20
@@ -565,3 +654,82 @@ def write_to_netcdf(dset_out, outfile, time_dtype="float"):
         else:
             dset_out[var].encoding["_FillValue"] = None
     dset_out.to_netcdf(outfile, encoding=encoding)
+
+
+def xr_times_from_tuples(timetuple, boundstuple, timefmt="ncar"):
+    """[summary]
+
+    Parameters
+    ----------
+    timetuple : list of tuples of ints
+        List of tuples containing time coordinate values [(Y,M,D,H,...) ...]
+    boundstuple : list of tuples of ints
+        List of tuples containing time bounds values [((Y,M,D,...)(Y,M,D,...)) ...]
+    timefmt : str, optional
+        Modeling center time format, either "gfdl" or "ncar", by default "ncar"
+
+    Returns
+    -------
+    xarray.Dataset
+        Returns an xarray dataset
+    """
+
+    dset_out = xr.Dataset()
+    nbnds = np.array([0, 1])
+
+    times = [cftime.DatetimeNoLeap(*x, calendar="noleap") for x in timetuple]
+    bounds = [cftime.DatetimeNoLeap(*x, calendar="noleap") for x in boundstuple]
+    bounds = list(zip(bounds[0:-1], bounds[1::]))
+
+    if timefmt == "gfdl":
+        bounds_index_name = "bnds"
+        bnds_attrs = {"long_name": "time axis boundaries"}
+        time_attrs = {
+            "long_name": "time",
+            "cartesian_axis": "T",
+            "calendar_type": "noleap",
+            "bounds": "time_bnds",
+        }
+    else:
+        bounds_index_name = "nbnds"
+        bnds_attrs = {"long_name": "time interval endpoints"}
+        time_attrs = {"long_name": "time", "bounds": "time_bnds"}
+
+    dims = (("time", times), (bounds_index_name, nbnds))
+
+    dset_out["time_bnds"] = xr.DataArray(
+        bounds,
+        coords=dims,
+        attrs=bnds_attrs,
+    )
+
+    dset_out["time"] = xr.DataArray(
+        times,
+        dims={"time": times},
+        coords={"time": (times)},
+        attrs=time_attrs,
+    )
+
+    if timefmt == "gfdl":
+        dset_out["average_T1"] = (("time"), [x[0] for x in bounds])
+        dset_out.average_T1.attrs = {"long_name": "Start time for average period"}
+
+        dset_out["average_T2"] = (("time"), [x[1] for x in bounds])
+        dset_out.average_T2.attrs = {"long_name": "End time for average period"}
+
+        dset_out["average_DT"] = (("time"), [(x[1] - x[0]) for x in bounds])
+        dset_out.average_DT.attrs = {"long_name": "Length of average period"}
+
+    if timefmt == "ncar":
+        dset_out["date"] = (
+            ("time"),
+            [int(x.strftime("%Y%m%d")) for x in dset_out.time.values],
+        )
+        dset_out.date.attrs = {"long_name": "current date (YYYYMMDD)"}
+
+    if bounds_index_name in list(dset_out.variables):
+        dset_out = dset_out.drop(bounds_index_name)
+    startyear = str(dset_out.time.values[0].strftime("%Y")).replace(" ", "0")
+    dset_out.attrs["base_time_unit"] = f"days since {startyear}-01-01"
+
+    return dset_out
