@@ -7,6 +7,8 @@ ___all__ = [
     "generate_monthly_time_axis",
     "generate_synthetic_dataset",
     "generate_random_array",
+    "gfdl_vertical_coord",
+    "gfdl_plev19_vertical_coord",
     "ncar_hybrid_coord",
     "write_to_netcdf",
     "generate_monthly_time_axis",
@@ -232,8 +234,12 @@ def generate_synthetic_dataset(
             dset = dset.merge(ncar_hybrid_coord())
             lev = dset.lev
         elif fmt == "gfdl":
-            dset = dset.merge(gfdl_vertical_coord())
-            lev = dset.pfull
+            if len(stats) == 19:
+                dset = dset.merge(gfdl_plev19_vertical_coord())
+                lev = dset.plev19
+            else:
+                dset = dset.merge(gfdl_vertical_coord())
+                lev = dset.pfull
 
     data = generate_random_array(xyshape, len(time), stats)
     data = data.squeeze()
@@ -379,6 +385,54 @@ def gfdl_vertical_coord():
     )
     dset_out["phalf"] = xr.DataArray(
         phalf, dims={"phalf": phalf}, coords={"phalf": phalf}, attrs=phalf_attrs
+    )
+
+    return dset_out
+
+
+def gfdl_plev19_vertical_coord():
+    """Generates GFDL CMIP-like 19-level pressure coordinate
+
+    Returns
+    -------
+    xarray.DataArray
+        GFDL CMIP-like 19-level pressure coordinate
+    """
+
+    plev19 = np.array(
+        [
+            100000.0,
+            92500.0,
+            85000.0,
+            70000.0,
+            60000.0,
+            50000.0,
+            40000.0,
+            30000.0,
+            25000.0,
+            20000.0,
+            15000.0,
+            10000.0,
+            7000.0,
+            5000.0,
+            3000.0,
+            2000.0,
+            1000.0,
+            500.0,
+            100.0,
+        ]
+    )
+
+    plev19_attrs = {
+        "long_name": "pressure",
+        "units": "Pa",
+        "axis": "Z",
+        "positive": "down",
+    }
+
+    dset_out = xr.Dataset()
+    dset_out["plev19"] = xr.DataArray(
+        plev19, dims={"plev19": plev19}, coords={"plev19": plev19}, attrs=plev19_attrs
     )
 
     return dset_out
