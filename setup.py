@@ -19,5 +19,6 @@ setup(
         "scripts/mdtf-coarsen.py",
         "scripts/ncar_synthetic.py",
         "scripts/gfdl_synthetic.py",
+        "scripts/mdtf_src_query.py",
     ],
 )
