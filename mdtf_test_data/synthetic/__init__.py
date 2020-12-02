@@ -7,6 +7,8 @@ from .synthetic import (
     generate_monthly_time_axis,
     generate_synthetic_dataset,
     generate_random_array,
+    gfdl_vertical_coord,
+    gfdl_plev19_vertical_coord,
     ncar_hybrid_coord,
     write_to_netcdf,
 )
