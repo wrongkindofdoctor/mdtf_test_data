@@ -15,5 +15,9 @@ setup(
     keywords="",
     url="https://github.com/jkrasting/mdtf_test_data",
     packages=find_packages(),
-    scripts=["scripts/mdtf-coarsen.py", "scripts/ncar_synthetic.py"],
+    scripts=[
+        "scripts/mdtf-coarsen.py",
+        "scripts/ncar_synthetic.py",
+        "scripts/gfdl_synthetic.py",
+    ],
 )
