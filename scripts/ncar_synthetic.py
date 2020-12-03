@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """ Script to generate synthetic NCAR CESM2 output """
 
 import os
