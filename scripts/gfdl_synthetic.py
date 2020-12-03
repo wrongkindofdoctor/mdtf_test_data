@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """ Script to generate synthetic GFDL CM4 output """
 
 import os

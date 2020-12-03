@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """ CLI script for coarsening datasets for MDTF """
 
 import argparse
