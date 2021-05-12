@@ -1,0 +1,31 @@
+# input data file for generating 1-hourly data using NCAR/CESM naming conventions
+variables :
+  name :
+    - "PRECT"
+    - "prw"
+    - "qsat_int"
+    - "tave"
+PRECT :
+  atts :
+    units : "m/s"
+    long_name : "Total (convective and large-scale) precipitation rate (liq + ice)"
+  stats :
+    - [2.6785912e-08, 7.193412e-08]
+prw :
+  atts :
+    units : "kg/m2"
+    long_name : "Vertically integrated specific humidity (surface to 200 mb)"
+  stats :
+    - [18.124813, 15.1677885]
+qsat_int :
+  atts :
+    units : "kg/m2"
+    long_name : "Vertically integrated saturated specific humidity (surface to 200 mb)"
+  stats :
+    - [30.223436, 24.573318]
+tave :
+  atts :
+    units : "K"
+    long_name : "Vertically integrated temperature (surface to 200 mb)"
+  stats :
+    - [254.17484, 14.091375]
