@@ -4,13 +4,14 @@
 Package to work with test input datasets for MDTF Diagnostics
 
 ## Overview
-This package is designed to coarsen NetCDF files for generating test datasets and produce synthetic datasets on-the-fly that can be used for testing the MDTF Diagnostics package.  
+This package is designed to coarsen NetCDF files for generating test datasets and produce synthetic datasets on-the-fly that can be used for testing the MDTF Diagnostics package.
 
 ## Requirements
 * xarray
 * xESMF
 * numpy
 * cftime
+* envyaml
 
 ## Getting the code
 ```
@@ -24,37 +25,52 @@ pip install .
 ```
 
 ## Usage
-This package can be used to generate fully-synthetic datasets based on NCAR's 
-CESM2 and GFDL's CM4 model output that can be used to test the MDTF Diagnostics package.
+This package can be used to generate fully-synthetic datasets based on NCAR's
+CESM2 and GFDL's CM4 model output that can be used to test the MDTF-Diagnostics package.
 
-To generate NCAR CESM output in a directory called `NCAR.Synthetic`:
 ```
-./ncar_synthetic.py
+usage: ./mdtf_synthetic/mdtf-synthetic.py [-h] [-c CONVENTION] [--startyear year] [--nyears years]
+[--dlat latitude resolution in degrees] [--dlon longitude resolution in degrees]
+
+Required arguments:
+  -c, --convention      Data convention [NCAR or GFDL]
+
+Optional arguments:
+  -h, --help            show this help message and exit
+  --startyear           start year of data [default is 1975]
+  --nyears              number of years of data to generate [default is 10]
+  --dlat                latitude resolution in degrees [default is 20]
+  --dlon                longitude resolution in degrees [default is 20]
+```
+To generate NCAR CESM output in a directory called `NCAR.Synthetic`:
+
+```
+./mdtf_synthetic/mdtf_synthetic.py -c NCAR --nyears 7
 ```
 
 To generate GFDL CM4 output in a directory called `GFDL.Synthetic`:
 ```
-./gfdl_synthetic.py
+./mdtf_synthetic/mdtf_synthetic.py -c GFDL --nyears 10
 ```
 
 To coarsen an existing NetCDF file:
 ```
-mdtf-coarsen.py 
-usage: mdtf-coarsen.py [-h] [-r REGRID_METHOD] [-o OUTFILE] [-O] infile
+mdtf_synthetic/util/mdtf-coarsen.py
+usage: mdtf_synthetic/util/mdtf-coarsen.py [-h] [-r REGRID_METHOD] [-o OUTFILE] [-O] infile
 
 Coarsen a NetCDF file.
 
-positional arguments:
+Required arguments:
   infile                Path to input NetCDF file
 
-optional arguments:
+Optional arguments:
   -h, --help            show this help message and exit
   -r REGRID_METHOD      xESMF regridding method
   -o OUTFILE, --outfile OUTFILE
                         Filename of output NetCDF file
   -O                    Overwrite existing file
 ```
-Notes: 
+Notes:
 * The coarsening tool only supports standard grids with dimensions name `lat` and `lon` for now
 * Any xESMF regrid method may be passed with the `-r` option
 
