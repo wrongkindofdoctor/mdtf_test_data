@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """ Collection of tools to coarsen model data """
 
 __all__ = ["construct_rect_grid", "regrid_lat_lon_dataset"]
