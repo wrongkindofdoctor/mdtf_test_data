@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """ Module for generating synthetic datasets """
 
 ___all__ = [
@@ -11,14 +12,14 @@ ___all__ = [
     "gfdl_plev19_vertical_coord",
     "ncar_hybrid_coord",
     "write_to_netcdf",
-    "generate_monthly_time_axis",
+    "generate_monthly_time_axis"
 ]
 
 import cftime
 import xarray as xr
 import numpy as np
 
-from mdtf_test_data.coarsen import construct_rect_grid
+from util.rectilinear import construct_rect_grid
 
 
 def dataset_stats(filename, var=None, limit=None):

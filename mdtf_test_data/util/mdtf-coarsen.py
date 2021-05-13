@@ -8,7 +8,7 @@ import warnings
 
 import xarray as xr
 
-from mdtf_test_data.coarsen import regrid_lat_lon_dataset
+from .rectilinear import regrid_lat_lon_dataset
 
 # Newer versions of xESMF are throwing an error:
 #     site-packages/xesmf/frontend.py:450: FutureWarning: ``output_sizes``

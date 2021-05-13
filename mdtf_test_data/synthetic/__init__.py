@@ -1,7 +1,5 @@
-""" Module for generating synthetic datasets """
-
-from .synthetic import (
-    dataset_stats,
+""" Init file for generating synthetic datasets """
+from .synthetic_data import ( dataset_stats,
     generate_daily_time_axis,
     generate_hourly_time_axis,
     generate_monthly_time_axis,
@@ -11,4 +9,5 @@ from .synthetic import (
     gfdl_plev19_vertical_coord,
     ncar_hybrid_coord,
     write_to_netcdf,
+    generate_monthly_time_axis
 )
