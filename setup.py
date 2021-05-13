@@ -9,8 +9,8 @@ is_travis = "TRAVIS" in os.environ
 setup(
     name="mdtf_test_data",
     version="1.0.0",
-    author="John Krasting",
-    author_email="John.Krasting@noaa.gov",
+    author=["John Krasting","Jessica Liptak"],
+    author_email= ["John.Krasting@noaa.gov","20195932+wrongkindofdoctor@users.noreply.github.com"],
     description=("Tools for working with MDTF Diagnostics test data sets"),
     license="LGPLv3",
     keywords="",
