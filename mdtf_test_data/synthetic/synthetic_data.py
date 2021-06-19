@@ -12,14 +12,14 @@ ___all__ = [
     "gfdl_plev19_vertical_coord",
     "ncar_hybrid_coord",
     "write_to_netcdf",
-    "generate_monthly_time_axis"
+    "generate_monthly_time_axis",
 ]
 
 import cftime
 import xarray as xr
 import numpy as np
 
-from util.rectilinear import construct_rect_grid
+from ..util.rectilinear import construct_rect_grid
 
 
 def dataset_stats(filename, var=None, limit=None):
@@ -50,6 +50,8 @@ def dataset_stats(filename, var=None, limit=None):
         print(list(zip(means, stds)))
 
     dset.close()
+
+    return list(zip(means,stds))
 
 
 def generate_daily_time_axis(startyear, nyears, timefmt="ncar"):

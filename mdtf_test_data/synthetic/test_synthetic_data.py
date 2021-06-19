@@ -5,6 +5,7 @@ import pickle
 import xarray as xr
 
 from .synthetic_data import (
+    dataset_stats,
     xr_times_from_tuples,
     write_to_netcdf,
     ncar_hybrid_coord,
@@ -25,6 +26,7 @@ def pytest_namespace():
         "ncar_hybrid": None,
         "gfdl_plev19": None,
         "gfdl_vert": None,
+        "dummy_dset": None,
     }
 
 
@@ -136,9 +138,47 @@ def test_generate_synthetic_dataset():
         attrs={"test_attribute": "some_value"},
         fmt="gfdl",
     )
-    print(result)
+    pytest.dummy_dset = result
     if not os.path.exists("ref_synth_dset.pkl"):
         pickle.dump(result, open("ref_synth_dset.pkl", "wb"))
     else:
         reference = pickle.load(open("ref_synth_dset.pkl", "rb"))
         assert result.equals(reference)
+
+
+def test_dataset_stats():
+    outfile = ".pytest.dummy.out.nc"
+
+    if os.path.exists(outfile):
+        os.remove(outfile)
+    write_to_netcdf(pytest.dummy_dset, outfile)
+    assert os.path.exists(outfile)
+
+    result = dataset_stats(outfile, var="dummy")
+    result = np.array(result)
+    reference = np.array(
+        [
+            (10.017495155334473, 1.0194365978240967),
+            (9.847151756286621, 1.0603336095809937),
+            (10.118196487426758, 0.9625908732414246),
+            (9.954728126525879, 0.8641798496246338),
+            (10.177528381347656, 0.9840584993362427),
+            (10.048087120056152, 1.0727150440216064),
+            (9.969891548156738, 0.9925058484077454),
+            (10.043947219848633, 1.1448439359664917),
+            (9.788042068481445, 0.9455227851867676),
+            (9.98440170288086, 0.9929303526878357),
+            (9.975597381591797, 0.9340150356292725),
+            (10.185722351074219, 0.9520735144615173),
+            (9.898139953613281, 1.0450271368026733),
+            (10.102021217346191, 0.9363077282905579),
+            (10.039666175842285, 0.9595484733581543),
+            (9.8911714553833, 1.005807876586914),
+            (9.9674711227417, 1.0527175664901733),
+            (10.098736763000488, 1.1312658786773682),
+            (10.204208374023438, 0.9746913313865662),
+        ]
+    )
+    if os.path.exists(outfile):
+        os.remove(outfile)
+    assert np.allclose(result, reference)
