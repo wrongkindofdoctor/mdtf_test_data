@@ -1,8 +1,8 @@
 import os
 import pytest
 import numpy as np
-import pickle
 import xarray as xr
+import pickle
 
 from .synthetic_data import (
     dataset_stats,
@@ -18,6 +18,19 @@ from .synthetic_data import (
     gfdl_vertical_coord,
 )
 
+__all__ = [
+    "test_xr_times_from_tuples_ncar",
+    "test_write_to_netcdf",
+    "test_ncar_hybrid_coord",
+    "test_gfdl_plev19_vertical_coord",
+    "test_gfdl_vertical_coord",
+    "test_generate_random_array",
+    "test_generate_daily_time_axis",
+    "test_generate_hourly_time_axis",
+    "test_generate_monthly_time_axis",
+    "test_generate_synthetic_dataset",
+    "test_dataset_stats"
+]
 
 def pytest_namespace():
     return {
@@ -138,6 +151,7 @@ def test_generate_synthetic_dataset():
         attrs={"test_attribute": "some_value"},
         fmt="gfdl",
     )
+
     pytest.dummy_dset = result
     if not os.path.exists("ref_synth_dset.pkl"):
         pickle.dump(result, open("ref_synth_dset.pkl", "wb"))

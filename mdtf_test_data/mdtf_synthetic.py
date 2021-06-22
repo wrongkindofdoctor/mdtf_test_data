@@ -3,6 +3,8 @@
 import argparse
 from util.cli import cli_holder
 from synthetic.synthetic_setup import synthetic_main
+import pickle
+import pytest
 import sys
 import os
 from envyaml import EnvYAML
@@ -31,12 +33,18 @@ def main():
                     required=False, default=20.0)
     parser.add_argument("--dlon", type=float, help="Longitude resolution in degrees",
                     required=False, default=20.0)
+    parser.add_argument("--unittest","-ut", action='store_true', help="Run unit tests",
+                    required=False)
     args = parser.parse_args()
     cli_info = cli_holder(args.convention, args.startyear,
-                          args.nyears, args.dlat, args.dlon)
+                          args.nyears, args.dlat, args.dlon, args.unittest)
 
     assert cli_info.dlat <= 30.0 and cli_info.dlat >= 0.5, "Error: dlat value is invalid; valid range is [0.5 30.0]"
     assert cli_info.dlon <= 60.0 and cli_info.dlon >= 0.5, "Error: dlon value is invalid; valid range is [0.5 60.0]"
+
+    if cli_info.unittest:
+        pytest.main(["-x", "mdtf_test_data/synthetic/test_synthetic_data.py"])
+
     if cli_info.convention == 'GFDL':
         print("Importing GFDL variable information")
         input_data = read_yaml("config/gfdl_day.yml")
