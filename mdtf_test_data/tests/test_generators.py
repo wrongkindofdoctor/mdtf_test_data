@@ -1,6 +1,6 @@
 import numpy as np
 
-from mdtf_test_data.random import generate_random_array
+from mdtf_test_data.generators import generate_random_array
 
 
 def test_generate_random_array():

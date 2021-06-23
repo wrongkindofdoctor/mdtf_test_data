@@ -1,7 +1,9 @@
 import numpy as np
 
 
-def generate_random_array(xyshape, ntimes, stats, dtype="float32"):
+def generate_random_array(
+    xyshape, ntimes, stats, dtype="float32", generator=None, generator_kwargs=None
+):
     """Generates an array of sample data chosen from a normal distribution
 
     Parameters
@@ -16,8 +18,8 @@ def generate_random_array(xyshape, ntimes, stats, dtype="float32"):
     np.ndarray
         Array of random data
     """
-    stats = [stats] if not isinstance(stats, list) else stats
 
+    stats = [stats] if not isinstance(stats, list) else stats
     data = []
     for time in range(ntimes):
         np.random.seed(time)

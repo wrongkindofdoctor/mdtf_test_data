@@ -20,7 +20,7 @@ import xarray as xr
 import numpy as np
 
 from ..util.rectilinear import construct_rect_grid
-from ..random import generate_random_array
+from ..generators import generate_random_array
 
 
 def dataset_stats(filename, var=None, limit=None):
