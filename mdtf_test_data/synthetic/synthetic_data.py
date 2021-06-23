@@ -18,6 +18,7 @@ ___all__ = [
 import cftime
 import xarray as xr
 import numpy as np
+from .. import generators
 
 from ..util.rectilinear import construct_rect_grid
 from ..generators import generate_random_array
@@ -187,6 +188,8 @@ def generate_synthetic_dataset(
     timeres="mon",
     attrs=None,
     fmt="ncar",
+    generator="normal",
+    generator_kwargs=None,
     stats=None,
 ):
     """Generates xarray dataset of syntheic data in NCAR format
@@ -240,7 +243,7 @@ def generate_synthetic_dataset(
     dset = ds_time.merge(dset)
     time = dset["time"]
 
-    generator_kwargs = {}
+    generator_kwargs = {} if generator_kwargs is None else generator_kwargs
 
     if stats is not None:
         stats = [stats] if not isinstance(stats, list) else stats
@@ -257,7 +260,14 @@ def generate_synthetic_dataset(
                     lev = dset.pfull
         generator_kwargs["stats"] = stats
 
-    data = generate_random_array(xyshape, len(time), generator_kwargs=generator_kwargs)
+    assert generator in list(
+        generators.__dict__.keys()
+    ), f"Unknown generator method: {generator}"
+    generator = generators.__dict__[generator]
+
+    data = generate_random_array(
+        xyshape, len(time), generator=generator, generator_kwargs=generator_kwargs
+    )
     data = data.squeeze()
 
     if len(data.shape) == 4:

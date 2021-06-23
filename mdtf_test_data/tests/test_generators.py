@@ -1,14 +1,16 @@
 import numpy as np
+import pytest
 
 from mdtf_test_data.generators import generate_random_array
-from mdtf_test_data.generators.normal import normal
+from mdtf_test_data import generators
 
 
 def test_generate_random_array_normal():
     stats = [(5.0, 10.0), (50.0, 100.0)]
+    generator = generators.__dict__["normal"]
     generator_kwargs = {"stats": stats}
     result = generate_random_array(
-        (20, 20), 5, generator=normal, generator_kwargs=generator_kwargs
+        (20, 20), 5, generator=generator, generator_kwargs=generator_kwargs
     )
     assert result.shape == (5, 2, 20, 20)
     assert np.allclose(result.sum(), 104847.61)
@@ -18,3 +20,23 @@ def test_generate_random_array_normal():
     assert np.allclose(
         (result[:, 1, :, :].mean(), result[:, 1, :, :].std()), (47.196785, 98.86136)
     )
+
+
+@pytest.mark.parametrize(
+    "varname,expected",
+    [
+        ("tave", 540084.0),
+        ("qsat_int", 131016.664),
+        ("cwv", 115304.7),
+        ("pr", 2095.1938),
+    ],
+)
+def test_generate_random_array_convective(varname, expected):
+    generator = generators.__dict__["convective"]
+    generator_kwargs = {"varname": varname}
+    result = generate_random_array(
+        (20, 20), 5, generator=generator, generator_kwargs=generator_kwargs
+    )
+    print(varname, result.sum())
+    assert result.shape == (5, 20, 20)
+    assert np.allclose(result.sum(), expected)

@@ -1,6 +1,7 @@
 import numpy as np
 
 from .normal import normal
+from .convective import convective
 
 
 def generate_random_array(

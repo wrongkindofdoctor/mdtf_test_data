@@ -110,7 +110,7 @@ def test_generate_monthly_time_axis():
     assert int(result.time[1] - result.time[0]) == 2419200000000000
 
 
-def test_generate_synthetic_dataset():
+def test_generate_synthetic_dataset_1():
     # not sure this is fully portable below
     stats = [(10.0, 1.0) for x in range(0, 19)]
     result = generate_synthetic_dataset(
@@ -121,6 +121,7 @@ def test_generate_synthetic_dataset():
         "dummy",
         attrs={"test_attribute": "some_value"},
         fmt="gfdl",
+        generator="normal",
         stats=stats,
     )
     pytest.dummy_dset = result
@@ -129,6 +130,25 @@ def test_generate_synthetic_dataset():
     else:
         reference = pickle.load(open("ref_synth_dset.pkl", "rb"))
         assert result.equals(reference)
+
+
+def test_generate_synthetic_dataset_2():
+    # not sure this is fully portable below
+    stats = [(10.0, 1.0) for x in range(0, 19)]
+    result = generate_synthetic_dataset(
+        180,
+        90,
+        1860,
+        1,
+        "dummy_var_2",
+        timeres="1hr",
+        attrs={"test_attribute": "some_value"},
+        fmt="gfdl",
+        generator="convective",
+        generator_kwargs={"varname": "pr"},
+    )
+    assert isinstance(result, xr.Dataset)
+    assert len(result.time) == 8760
 
 
 def test_dataset_stats():
