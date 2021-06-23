@@ -179,14 +179,20 @@ def generate_monthly_time_axis(startyear, nyears, timefmt="ncar"):
 
 
 def generate_synthetic_dataset(
-    stats, dlon, dlat, startyear, nyears, varname, timeres="mon", attrs=None, fmt="ncar"
+    dlon,
+    dlat,
+    startyear,
+    nyears,
+    varname,
+    timeres="mon",
+    attrs=None,
+    fmt="ncar",
+    stats=None,
 ):
     """Generates xarray dataset of syntheic data in NCAR format
 
     Parameters
     ----------
-    stats : tuple or list of tuples
-        Array statistics in the format of [(mean,stddev)]
     dlon : float, optional
         Grid spacing in the x-dimension (longitude)
     dlat : float, optional
@@ -203,6 +209,8 @@ def generate_synthetic_dataset(
         Variable attributes, by default None
     attrs : dict, optional
         Variable attributes, by default None
+    stats : tuple or list of tuples
+        Array statistics in the format of [(mean,stddev)]
 
     Returns
     -------
@@ -232,20 +240,24 @@ def generate_synthetic_dataset(
     dset = ds_time.merge(dset)
     time = dset["time"]
 
-    stats = [stats] if not isinstance(stats, list) else stats
-    if len(stats) > 1:
-        if fmt == "ncar":
-            dset = dset.merge(ncar_hybrid_coord())
-            lev = dset.lev
-        elif fmt == "gfdl":
-            if len(stats) == 19:
-                dset = dset.merge(gfdl_plev19_vertical_coord())
-                lev = dset.plev19
-            else:
-                dset = dset.merge(gfdl_vertical_coord())
-                lev = dset.pfull
+    generator_kwargs = {}
 
-    data = generate_random_array(xyshape, len(time), stats)
+    if stats is not None:
+        stats = [stats] if not isinstance(stats, list) else stats
+        if len(stats) > 1:
+            if fmt == "ncar":
+                dset = dset.merge(ncar_hybrid_coord())
+                lev = dset.lev
+            elif fmt == "gfdl":
+                if len(stats) == 19:
+                    dset = dset.merge(gfdl_plev19_vertical_coord())
+                    lev = dset.plev19
+                else:
+                    dset = dset.merge(gfdl_vertical_coord())
+                    lev = dset.pfull
+        generator_kwargs["stats"] = stats
+
+    data = generate_random_array(xyshape, len(time), generator_kwargs=generator_kwargs)
     data = data.squeeze()
 
     if len(data.shape) == 4:

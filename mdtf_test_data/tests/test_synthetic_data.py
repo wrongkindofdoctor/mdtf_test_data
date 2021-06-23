@@ -114,7 +114,6 @@ def test_generate_synthetic_dataset():
     # not sure this is fully portable below
     stats = [(10.0, 1.0) for x in range(0, 19)]
     result = generate_synthetic_dataset(
-        stats,
         180,
         90,
         1860,
@@ -122,6 +121,7 @@ def test_generate_synthetic_dataset():
         "dummy",
         attrs={"test_attribute": "some_value"},
         fmt="gfdl",
+        stats=stats,
     )
     pytest.dummy_dset = result
     if not os.path.exists("ref_synth_dset.pkl"):

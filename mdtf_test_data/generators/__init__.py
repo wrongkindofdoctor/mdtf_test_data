@@ -1,8 +1,10 @@
 import numpy as np
 
+from .normal import normal
+
 
 def generate_random_array(
-    xyshape, ntimes, stats, dtype="float32", generator=None, generator_kwargs=None
+    xyshape, ntimes, dtype="float32", generator=None, generator_kwargs=None
 ):
     """Generates an array of sample data chosen from a normal distribution
 
@@ -19,10 +21,9 @@ def generate_random_array(
         Array of random data
     """
 
-    stats = [stats] if not isinstance(stats, list) else stats
-    data = []
-    for time in range(ntimes):
-        np.random.seed(time)
-        data.append(np.array([np.random.normal(x[0], x[1], xyshape) for x in stats]))
+    generator = normal if generator is None else generator
+    generator_kwargs = {} if generator_kwargs is None else generator_kwargs
 
-    return np.array(data).astype(dtype)
+    result = generator(xyshape, ntimes, **generator_kwargs)
+
+    return np.array(result).astype(dtype)
