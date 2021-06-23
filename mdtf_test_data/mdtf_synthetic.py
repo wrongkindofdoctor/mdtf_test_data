@@ -43,7 +43,8 @@ def main():
     assert cli_info.dlon <= 60.0 and cli_info.dlon >= 0.5, "Error: dlon value is invalid; valid range is [0.5 60.0]"
 
     if cli_info.unittest:
-        pytest.main(["-x", "mdtf_test_data/synthetic/test_synthetic_data.py"])
+        pytest.main(["-x", "mdtf_test_data/tests/test_synthetic_data.py"])
+        pytest.main(["-x", "mdtf_test_data/tests/test_generators.py"])
 
     if cli_info.convention == 'GFDL':
         print("Importing GFDL variable information")
