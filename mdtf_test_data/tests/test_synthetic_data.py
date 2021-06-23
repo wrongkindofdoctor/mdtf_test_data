@@ -4,19 +4,16 @@ import numpy as np
 import pickle
 import xarray as xr
 
-from .synthetic_data import (
-    dataset_stats,
-    xr_times_from_tuples,
-    write_to_netcdf,
-    ncar_hybrid_coord,
-    generate_daily_time_axis,
-    generate_hourly_time_axis,
-    generate_monthly_time_axis,
-    generate_random_array,
-    generate_synthetic_dataset,
-    gfdl_plev19_vertical_coord,
-    gfdl_vertical_coord,
-)
+from mdtf_test_data.synthetic import dataset_stats
+from mdtf_test_data.synthetic import xr_times_from_tuples
+from mdtf_test_data.synthetic import write_to_netcdf
+from mdtf_test_data.synthetic import ncar_hybrid_coord
+from mdtf_test_data.synthetic import generate_daily_time_axis
+from mdtf_test_data.synthetic import generate_hourly_time_axis
+from mdtf_test_data.synthetic import generate_monthly_time_axis
+from mdtf_test_data.synthetic import generate_synthetic_dataset
+from mdtf_test_data.synthetic import gfdl_plev19_vertical_coord
+from mdtf_test_data.synthetic import gfdl_vertical_coord
 
 
 def pytest_namespace():
@@ -87,18 +84,6 @@ def test_gfdl_vertical_coord():
     assert np.allclose(float(result.pfull.sum()), 14932.053848)
     assert np.allclose(float(result.phalf.sum()), 15444.908725)
     pytest.gfdl_vert = result
-
-
-def test_generate_random_array():
-    result = generate_random_array((20, 20), 5, [(5.0, 10.0), (50.0, 100.0)])
-    assert result.shape == (5, 2, 20, 20)
-    assert np.allclose(result.sum(), 104847.61)
-    assert np.allclose(
-        (result[:, 0, :, :].mean(), result[:, 0, :, :].std()), (5.2270184, 10.07385)
-    )
-    assert np.allclose(
-        (result[:, 1, :, :].mean(), result[:, 1, :, :].std()), (47.196785, 98.86136)
-    )
 
 
 def test_generate_daily_time_axis():

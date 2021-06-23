@@ -20,6 +20,7 @@ import xarray as xr
 import numpy as np
 
 from ..util.rectilinear import construct_rect_grid
+from ..random import generate_random_array
 
 
 def dataset_stats(filename, var=None, limit=None):
@@ -51,7 +52,7 @@ def dataset_stats(filename, var=None, limit=None):
 
     dset.close()
 
-    return list(zip(means,stds))
+    return list(zip(means, stds))
 
 
 def generate_daily_time_axis(startyear, nyears, timefmt="ncar"):
@@ -256,31 +257,6 @@ def generate_synthetic_dataset(
     dset.attrs["convention"] = fmt
 
     return dset
-
-
-def generate_random_array(xyshape, ntimes, stats, dtype="float32"):
-    """Generates an array of sample data chosen from a normal distribution
-
-    Parameters
-    ----------
-    stats : tuple or list of tuples
-        Array statistics in the format of [(mean,stddev)]
-    xyshape : tuple
-        Tuple of desired array shape
-
-    Returns
-    -------
-    np.ndarray
-        Array of random data
-    """
-    stats = [stats] if not isinstance(stats, list) else stats
-
-    data = []
-    for time in range(ntimes):
-        np.random.seed(time)
-        data.append(np.array([np.random.normal(x[0], x[1], xyshape) for x in stats]))
-
-    return np.array(data).astype(dtype)
 
 
 def gfdl_vertical_coord():
