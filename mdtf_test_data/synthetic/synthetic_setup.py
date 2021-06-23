@@ -38,6 +38,21 @@ def synthetic_main(
     # -- Create Data
     print("Generating data with time resolution of ", TIME_RES)
     for v in var_names:
+        stats = (
+            yaml_dict[v + ".stats"]
+            if str(v + ".stats") in list(yaml_dict.keys())
+            else None
+        )
+        generator = (
+            yaml_dict[v + ".generator.name"]
+            if str(v + ".generator.name") in list(yaml_dict.keys())
+            else "normal"
+        )
+        generator_kwargs = (
+            yaml_dict[v + ".generator.args"]
+            if str(v + ".generator.args") in list(yaml_dict.keys())
+            else {}
+        )
         # vinfo = yaml_dict[v]
         # print(vinfo)
         dset_out = generate_synthetic_dataset(
@@ -49,8 +64,8 @@ def synthetic_main(
             timeres=TIME_RES,
             attrs=yaml_dict[v + ".atts"],
             fmt=DATA_FORMAT,
-            stats=yaml_dict[v + ".stats"],
+            generator=generator,
+            stats=stats,
+            generator_kwargs=generator_kwargs,
         )
-        if TIME_RES == "1hr":
-            dset_out = dset_out.isel(time=slice(0, 2130))
         write_to_netcdf(dset_out, f"{CASENAME}/{TIME_RES}/{CASENAME}.{v}.{TIME_RES}.nc")
