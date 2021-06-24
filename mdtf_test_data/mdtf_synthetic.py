@@ -29,9 +29,9 @@ def main():
                     required=False, default=1)
     parser.add_argument("--nyears", type=int, help="Total length of time period in years",
                     required=False, default=10)
-    parser.add_argument("--dlat", type=float, help="Latitude resolution in degrees",
+    parser.add_argument("--dlat", type=float, help="Latitude resolution in degrees (will not change default value for NCAR daily data)",
                     required=False, default=20.0)
-    parser.add_argument("--dlon", type=float, help="Longitude resolution in degrees",
+    parser.add_argument("--dlon", type=float, help="Longitude resolution in degrees (will not change default value for NCAR daily data)",
                     required=False, default=20.0)
     parser.add_argument("--unittest","-ut", action='store_true', help="Run unit tests",
                     required=False)
@@ -43,6 +43,7 @@ def main():
     assert cli_info.dlon <= 60.0 and cli_info.dlon >= 0.5, "Error: dlon value is invalid; valid range is [0.5 60.0]"
 
     if cli_info.unittest:
+        print("Running unit tests")
         pytest.main(["-x", "mdtf_test_data/tests/test_synthetic_data.py"])
         pytest.main(["-x", "mdtf_test_data/tests/test_generators.py"])
 
@@ -59,8 +60,8 @@ def main():
         time_res = ["mon","day","3hr","1hr"]
         for t in time_res:
             input_data = read_yaml("config/ncar_" + t + ".yml")
-            dlat = 20.0
-            dlon = 20.0
+            dlat = cli_info.dlat
+            dlon = cli_info.dlon
             if t == "day":
                 dlat=5.0
                 dlon=5.0
