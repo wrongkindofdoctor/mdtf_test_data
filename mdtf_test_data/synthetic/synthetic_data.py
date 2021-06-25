@@ -780,7 +780,7 @@ def xr_times_from_tuples(timetuple, boundstuple, timefmt="ncar"):
         dset_out.date.attrs = {"long_name": "current date (YYYYMMDD)"}
 
     if bounds_index_name in list(dset_out.variables):
-        dset_out = dset_out.drop(bounds_index_name)
+        dset_out = dset_out.drop_vars(bounds_index_name)
     startyear = str(dset_out.time.values[0].strftime("%Y")).replace(" ", "0")
     dset_out.attrs["base_time_unit"] = f"days since {startyear}-01-01"
 
