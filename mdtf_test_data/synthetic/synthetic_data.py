@@ -21,6 +21,7 @@ import numpy as np
 from util.rectilinear import construct_rect_grid
 import generators
 
+
 def dataset_stats(filename, var=None, limit=None):
     """Prints statistics and attributes for a NetCDF file
 
@@ -220,7 +221,7 @@ def generate_synthetic_dataset(
 
     attrs = {} if attrs is None else attrs
 
-    dset =construct_rect_grid(dlon, dlat, add_attrs=True, attr_fmt=fmt)
+    dset = construct_rect_grid(dlon, dlat, add_attrs=True, attr_fmt=fmt)
     lat = dset.lat
     lon = dset.lon
     xyshape = (len(dset["lat"]), len(dset["lon"]))
