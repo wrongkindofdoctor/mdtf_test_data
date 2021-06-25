@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 import generators
 
+
 def test_generate_random_array_normal():
     stats = [(5.0, 10.0), (50.0, 100.0)]
     generator = generators.__dict__["normal"]
@@ -25,7 +26,7 @@ def test_generate_random_array_normal():
         ("tave", 540084.0),
         ("qsat_int", 131016.664),
         ("cwv", 115304.7),
-        ("pr", 2095.1938),
+        ("pr", 4460.169),
     ],
 )
 def test_generate_random_array_convective(varname, expected):

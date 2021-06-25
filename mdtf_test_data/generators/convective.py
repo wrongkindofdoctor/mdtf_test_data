@@ -36,7 +36,7 @@ def convective(xyshape, ntimes, varname="missing"):
         w_minus_wc = results["cwv"] - (
             50.0 + (results["tave"] - 268.0) * (67.0 - 50.0) / (274.0 - 268.0)
         )  # Units: mm
-        pr = np.log(1 + np.exp(0.2 * (w_minus_wc))) + 0.2 * np.random.normal(
+        pr = np.log(1 + np.exp(0.6 * (w_minus_wc))) + 0.2 * np.random.normal(
             0.0, 0.5, size=arrshape
         )
         pr[pr < 0] = 0.0
