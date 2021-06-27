@@ -26,7 +26,7 @@ def test_generate_random_array_normal():
         ("tave", 540084.0),
         ("qsat_int", 131016.664),
         ("cwv", 115304.7),
-        ("pr", 4460.169),
+        ("pr", 0.0012361809),
     ],
 )
 def test_generate_random_array_convective(varname, expected):
