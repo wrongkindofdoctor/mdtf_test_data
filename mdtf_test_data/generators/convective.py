@@ -31,7 +31,7 @@ def convective(xyshape, ntimes, varname="missing"):
         cwv[cwv <= 0.0] = results["qsat_int"][cwv <= 0.0]
         results["cwv"] = cwv
 
-    # units=mm/h
+    # units=m/s
     if varname == "pr":
         w_minus_wc = results["cwv"] - (
             50.0 + (results["tave"] - 268.0) * (67.0 - 50.0) / (274.0 - 268.0)
