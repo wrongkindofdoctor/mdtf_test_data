@@ -12,14 +12,14 @@ ___all__ = [
     "gfdl_plev19_vertical_coord",
     "ncar_hybrid_coord",
     "write_to_netcdf",
-    "generate_monthly_time_axis"
+    "generate_monthly_time_axis",
 ]
 
 import cftime
 import xarray as xr
 import numpy as np
-
 from util.rectilinear import construct_rect_grid
+import generators
 
 
 def dataset_stats(filename, var=None, limit=None):
@@ -50,6 +50,8 @@ def dataset_stats(filename, var=None, limit=None):
         print(list(zip(means, stds)))
 
     dset.close()
+
+    return list(zip(means, stds))
 
 
 def generate_daily_time_axis(startyear, nyears, timefmt="ncar"):
@@ -176,14 +178,22 @@ def generate_monthly_time_axis(startyear, nyears, timefmt="ncar"):
 
 
 def generate_synthetic_dataset(
-    stats, dlon, dlat, startyear, nyears, varname, timeres="mon", attrs=None, fmt="ncar"
+    dlon,
+    dlat,
+    startyear,
+    nyears,
+    varname,
+    timeres="mon",
+    attrs=None,
+    fmt="ncar",
+    generator="normal",
+    generator_kwargs=None,
+    stats=None,
 ):
     """Generates xarray dataset of syntheic data in NCAR format
 
     Parameters
     ----------
-    stats : tuple or list of tuples
-        Array statistics in the format of [(mean,stddev)]
     dlon : float, optional
         Grid spacing in the x-dimension (longitude)
     dlat : float, optional
@@ -200,6 +210,8 @@ def generate_synthetic_dataset(
         Variable attributes, by default None
     attrs : dict, optional
         Variable attributes, by default None
+    stats : tuple or list of tuples
+        Array statistics in the format of [(mean,stddev)]
 
     Returns
     -------
@@ -229,20 +241,31 @@ def generate_synthetic_dataset(
     dset = ds_time.merge(dset)
     time = dset["time"]
 
-    stats = [stats] if not isinstance(stats, list) else stats
-    if len(stats) > 1:
-        if fmt == "ncar":
-            dset = dset.merge(ncar_hybrid_coord())
-            lev = dset.lev
-        elif fmt == "gfdl":
-            if len(stats) == 19:
-                dset = dset.merge(gfdl_plev19_vertical_coord())
-                lev = dset.plev19
-            else:
-                dset = dset.merge(gfdl_vertical_coord())
-                lev = dset.pfull
+    generator_kwargs = {} if generator_kwargs is None else generator_kwargs
 
-    data = generate_random_array(xyshape, len(time), stats)
+    if stats is not None:
+        stats = [stats] if not isinstance(stats, list) else stats
+        if len(stats) > 1:
+            if fmt == "ncar":
+                dset = dset.merge(ncar_hybrid_coord())
+                lev = dset.lev
+            elif fmt == "gfdl":
+                if len(stats) == 19:
+                    dset = dset.merge(gfdl_plev19_vertical_coord())
+                    lev = dset.plev19
+                else:
+                    dset = dset.merge(gfdl_vertical_coord())
+                    lev = dset.pfull
+        generator_kwargs["stats"] = stats
+
+    assert generator in list(
+        generators.__dict__.keys()
+    ), f"Unknown generator method: {generator}"
+    generator = generators.__dict__[generator]
+
+    data = generators.generate_random_array(
+        xyshape, len(time), generator=generator, generator_kwargs=generator_kwargs
+    )
     data = data.squeeze()
 
     if len(data.shape) == 4:
@@ -254,31 +277,6 @@ def generate_synthetic_dataset(
     dset.attrs["convention"] = fmt
 
     return dset
-
-
-def generate_random_array(xyshape, ntimes, stats, dtype="float32"):
-    """Generates an array of sample data chosen from a normal distribution
-
-    Parameters
-    ----------
-    stats : tuple or list of tuples
-        Array statistics in the format of [(mean,stddev)]
-    xyshape : tuple
-        Tuple of desired array shape
-
-    Returns
-    -------
-    np.ndarray
-        Array of random data
-    """
-    stats = [stats] if not isinstance(stats, list) else stats
-
-    data = []
-    for time in range(ntimes):
-        np.random.seed(time)
-        data.append(np.array([np.random.normal(x[0], x[1], xyshape) for x in stats]))
-
-    return np.array(data).astype(dtype)
 
 
 def gfdl_vertical_coord():
@@ -783,7 +781,7 @@ def xr_times_from_tuples(timetuple, boundstuple, timefmt="ncar"):
         dset_out.date.attrs = {"long_name": "current date (YYYYMMDD)"}
 
     if bounds_index_name in list(dset_out.variables):
-        dset_out = dset_out.drop(bounds_index_name)
+        dset_out = dset_out.drop_vars(bounds_index_name)
     startyear = str(dset_out.time.values[0].strftime("%Y")).replace(" ", "0")
     dset_out.attrs["base_time_unit"] = f"days since {startyear}-01-01"
 
