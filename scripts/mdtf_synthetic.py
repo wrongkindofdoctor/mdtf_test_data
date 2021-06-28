@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 """ mdtf_test_data driver program """
 import argparse
-from util.cli import cli_holder
-from synthetic.synthetic_setup import synthetic_main
+from mdtf_test_data.util.cli import cli_holder
+from mdtf_test_data.synthetic.synthetic_setup import synthetic_main
 import pickle
+import pkg_resources as pkgr
 import pytest
 import sys
 import os
@@ -17,9 +18,6 @@ def read_yaml(file_name):
 def main():
     """The the central nervous system of the mdtf_test_data package"""
     print("Starting mdtf_test_data")
-    # default behavior is to run script from mdtf_test_data directory
-    cur_dir = os.getcwd()
-    assert(os.path.basename(cur_dir) == "mdtf_test_data"), "Error: Current directory is not mdtf_test_data"
     # Define the the CLI arguments and call the parser.
     parser = argparse.ArgumentParser(description="parse mdtf_test_data command-line arguments")
     # @TODO add support for CMIP convention
@@ -43,12 +41,14 @@ def main():
     assert cli_info.dlon <= 60.0 and cli_info.dlon >= 0.5, "Error: dlon value is invalid; valid range is [0.5 60.0]"
 
     if cli_info.unittest:
-        pytest.main(["-x", "mdtf_test_data/tests/test_synthetic_data.py"])
-        pytest.main(["-x", "mdtf_test_data/tests/test_generators.py"])
+        pytest.main(["-x", pkgr.resource_filename("mdtf_test_data", "tests/test_synthetic_data.py")])
+        pytest.main(["-x", pkgr.resource_filename("mdtf_test_data", "tests/test_generators.py")])
+        exit()
 
     if cli_info.convention == 'GFDL':
         print("Importing GFDL variable information")
-        input_data = read_yaml("config/gfdl_day.yml")
+        input_data = pkgr.resource_filename("mdtf_test_data", "config/gfdl_day.yml")
+        input_data = read_yaml(input_data)
 
         print("Calling Synthetic Data Generator for GFDL data")
         synthetic_main(input_data, DLAT=cli_info.dlat, DLON=cli_info.dlon,
@@ -58,7 +58,8 @@ def main():
         print("Importing NCAR variable information")
         time_res = ["mon","day","3hr","1hr"]
         for t in time_res:
-            input_data = read_yaml("config/ncar_" + t + ".yml")
+            input_data = pkgr.resource_filename("mdtf_test_data", f"config/ncar_{t}.yml")
+            input_data = read_yaml(input_data)
             dlat = 20.0
             dlon = 20.0
             if t == "day":

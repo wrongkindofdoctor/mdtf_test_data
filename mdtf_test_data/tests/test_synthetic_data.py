@@ -4,16 +4,16 @@ import numpy as np
 import xarray as xr
 import pickle
 
-from synthetic import dataset_stats
-from synthetic import xr_times_from_tuples
-from synthetic import write_to_netcdf
-from synthetic import ncar_hybrid_coord
-from synthetic import generate_daily_time_axis
-from synthetic import generate_hourly_time_axis
-from synthetic import generate_monthly_time_axis
-from synthetic import generate_synthetic_dataset
-from synthetic import gfdl_plev19_vertical_coord
-from synthetic import gfdl_vertical_coord
+from mdtf_test_data.synthetic import dataset_stats
+from mdtf_test_data.synthetic import xr_times_from_tuples
+from mdtf_test_data.synthetic import write_to_netcdf
+from mdtf_test_data.synthetic import ncar_hybrid_coord
+from mdtf_test_data.synthetic import generate_daily_time_axis
+from mdtf_test_data.synthetic import generate_hourly_time_axis
+from mdtf_test_data.synthetic import generate_monthly_time_axis
+from mdtf_test_data.synthetic import generate_synthetic_dataset
+from mdtf_test_data.synthetic import gfdl_plev19_vertical_coord
+from mdtf_test_data.synthetic import gfdl_vertical_coord
 
 __all__ = [
     "test_xr_times_from_tuples_ncar",
