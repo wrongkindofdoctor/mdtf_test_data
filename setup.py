@@ -1,19 +1,5 @@
-#!/usr/bin/python
-""" setup for mdtf_test_data """
-from setuptools import setup, find_packages
-import os
+""" setup script """
+import setuptools
 
+setuptools.setup()
 
-is_travis = "TRAVIS" in os.environ
-
-setup(
-    name="mdtf_test_data",
-    version="1.0.0",
-    author=["John Krasting","Jessica Liptak"],
-    author_email= ["John.Krasting@noaa.gov","20195932+wrongkindofdoctor@users.noreply.github.com"],
-    description=("Tools for working with MDTF Diagnostics test data sets"),
-    license="LGPLv3",
-    keywords="",
-    url="https://github.com/jkrasting/mdtf_test_data",
-    packages=find_packages()
-)
