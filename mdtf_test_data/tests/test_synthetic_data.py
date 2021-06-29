@@ -3,6 +3,8 @@ import pytest
 import numpy as np
 import xarray as xr
 import pickle
+import pkg_resources as pkgr
+import warnings
 
 from mdtf_test_data.synthetic import dataset_stats
 from mdtf_test_data.synthetic import xr_times_from_tuples
@@ -26,8 +28,9 @@ __all__ = [
     "test_generate_hourly_time_axis",
     "test_generate_monthly_time_axis",
     "test_generate_synthetic_dataset",
-    "test_dataset_stats"
+    "test_dataset_stats",
 ]
+
 
 def pytest_namespace():
     return {
@@ -139,15 +142,27 @@ def test_generate_synthetic_dataset_1():
     )
 
     pytest.dummy_dset = result
-    if not os.path.exists("ref_synth_dset.pkl"):
-        pickle.dump(result, open("ref_synth_dset.pkl", "wb"))
-    else:
-        reference = pickle.load(open("ref_synth_dset.pkl", "rb"))
+    xr_version = tuple([int(x) for x in xr.__version__.split(".")])
+    if xr_version < (0, 17, 0):
+        warnings.warn(
+            "The version of Xarray is outdated. Consider "
+            + "upgrading to version >= 0.17.0"
+        )
+        pytest.skip()
+
+    ref_file = pkgr.resource_filename("mdtf_test_data", "tests/ref_synth_dset.nc")
+
+    if os.path.exists(ref_file):
+        reference = xr.open_dataset(ref_file)
         assert result.equals(reference)
+    else:
+        warnings.warn("Unable to compare against reference dataset")
+        # below are lines to write out the reference file
+        # result.time.encoding["units"] = "days since 0001-01-01 00:00:00"
+        # result.to_netcdf("ref_synth_dset.nc")
 
 
 def test_generate_synthetic_dataset_2():
-    # not sure this is fully portable below
     stats = [(10.0, 1.0) for x in range(0, 19)]
     result = generate_synthetic_dataset(
         180,
