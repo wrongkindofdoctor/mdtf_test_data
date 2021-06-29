@@ -44,11 +44,11 @@ def main():
        retcode_1 = pytest.main(["-x", "mdtf_test_data/tests/test_synthetic_data.py"])
        if retcode_1 != 0 :
            print('test_synthetic_data failed. Check output log for details. Exiting program')
-           exit(retcode_1)
+           sys.exit(retcode_1)
        retcode_2 = pytest.main(["-x", "mdtf_test_data/tests/test_generators.py"])
        if retcode_2 != 0 :
            print('test_generators failed. Check output log for details. Exiting program.')
-           exit(retcode_2)
+           sys.exit(retcode_2)
 
     if cli_info.convention == 'GFDL':
         print("Importing GFDL variable information")
