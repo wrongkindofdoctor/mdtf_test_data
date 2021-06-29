@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 """ mdtf_test_data driver program """
-import argparse
-from mdtf_test_data.util.cli import cli_holder
+import sys
+# add mdtf_test_data to system path
+sys.path.insert(0, '../mdtf_test_data')
 from mdtf_test_data.synthetic.synthetic_setup import synthetic_main
+from mdtf_test_data.util.cli import cli_holder
+import argparse
 import pickle
 import pkg_resources as pkgr
 import pytest
-import sys
 import os
 from envyaml import EnvYAML
 
