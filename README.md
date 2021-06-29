@@ -32,7 +32,7 @@ This package can be used to generate fully-synthetic datasets based on NCAR's
 CESM2 and GFDL's CM4 model output that can be used to test the MDTF-Diagnostics package.
 
 ```
-usage: ./mdtf_test_data/mdtf_synthetic.py [-h] [-c CONVENTION] [--startyear year] [--nyears years]
+usage: ./scripts/mdtf_synthetic.py [-h] [-c CONVENTION] [--startyear year] [--nyears years]
 [--dlat latitude resolution in degrees] [--dlon longitude resolution in degrees] [--unittest]
 
 Required arguments:
@@ -49,12 +49,12 @@ Optional arguments:
 To generate NCAR CESM output in a directory called `NCAR.Synthetic`:
 
 ```
-./mdtf_synthetic/mdtf_synthetic.py -c NCAR --nyears 7
+./scripts/mdtf_synthetic.py -c NCAR --nyears 7
 ```
 
 To generate GFDL CM4 output in a directory called `GFDL.Synthetic`:
 ```
-./mdtf_synthetic/mdtf_synthetic.py -c GFDL --nyears 10
+./scripts/mdtf_synthetic.py -c GFDL --nyears 10
 ```
 
 To coarsen an existing NetCDF file:
