@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-import generators
+import mdtf_test_data.generators as generators
 
 
 def test_generate_random_array_normal():

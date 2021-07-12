@@ -13,4 +13,3 @@ from .synthetic_data import (
     generate_monthly_time_axis,
     xr_times_from_tuples,
 )
-import generators

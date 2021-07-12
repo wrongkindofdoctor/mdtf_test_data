@@ -18,8 +18,8 @@ ___all__ = [
 import cftime
 import xarray as xr
 import numpy as np
-from util.rectilinear import construct_rect_grid
-import generators
+from mdtf_test_data.util.rectilinear import construct_rect_grid
+import mdtf_test_data.generators as generators
 
 
 def dataset_stats(filename, var=None, limit=None):
