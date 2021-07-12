@@ -7,7 +7,11 @@ import warnings
 
 import numpy as np
 import xarray as xr
-import xesmf as xe
+
+try:
+    import xesmf as xe
+except:
+    warnings.warn("Unable to load `xesmf`. Regridding functionality will not work.")
 
 
 def construct_rect_grid(dlon, dlat, add_attrs=False, attr_fmt="ncar", bounds=False):
