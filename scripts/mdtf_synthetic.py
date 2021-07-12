@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 """ mdtf_test_data driver program """
 import sys
-# add mdtf_test_data to system path
-sys.path.insert(0, '../mdtf_test_data')
+import mdtf_test_data
 from mdtf_test_data.synthetic.synthetic_setup import synthetic_main
 from mdtf_test_data.util.cli import cli_holder
 import argparse
 import pkg_resources as pkgr
-import pytest
 from envyaml import EnvYAML
+
+MDTF_PACKAGE_PATH = mdtf_test_data.__path__[0]
 
 def read_yaml(file_name):
     """ A function to read YAML files """
@@ -41,11 +41,15 @@ def main():
     assert cli_info.dlon <= 60.0 and cli_info.dlon >= 0.5, "Error: dlon value is invalid; valid range is [0.5 60.0]"
 
     if cli_info.unittest:
-       retcode_1 = pytest.main(["-x", "mdtf_test_data/tests/test_synthetic_data.py"])
+       try:
+           import pytest
+       except:
+           raise Exception("Please install `pytest` in order to run unit tests.")
+       retcode_1 = pytest.main(["-x", f"{MDTF_PACKAGE_PATH}/tests/test_synthetic_data.py"])
        if retcode_1 != 0 :
            print('test_synthetic_data failed. Check output log for details. Exiting program')
            sys.exit(retcode_1)
-       retcode_2 = pytest.main(["-x", "mdtf_test_data/tests/test_generators.py"])
+       retcode_2 = pytest.main(["-x", f"{MDTF_PACKAGE_PATH}/tests/test_generators.py"])
        if retcode_2 != 0 :
            print('test_generators failed. Check output log for details. Exiting program.')
            sys.exit(retcode_2)
