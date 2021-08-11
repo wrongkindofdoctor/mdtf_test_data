@@ -24,13 +24,12 @@ def main():
     parser = argparse.ArgumentParser(
         description="parse mdtf_test_data command-line arguments"
     )
-    # @TODO add support for CMIP convention
     parser.add_argument(
         "--convention",
         "-c",
         type=str,
         help="Model convention",
-        choices=["GFDL", "CESM", "NCAR"],
+        choices=["GFDL", "CESM", "NCAR", "CMIP"],
         required=True,
         default="",
     )
@@ -142,6 +141,22 @@ def main():
                 TIME_RES=t,
                 DATA_FORMAT="ncar",
             )
+    if cli_info.convention == "CMIP":
+        print("Importing CMIP variable information")
+        input_data = pkgr.resource_filename("mdtf_test_data", "config/cmip_day.yml")
+        input_data = read_yaml(input_data)
+
+        print("Calling Synthetic Data Generator for CMIP data")
+        synthetic_main(
+            input_data,
+            DLAT=cli_info.dlat,
+            DLON=cli_info.dlon,
+            STARTYEAR=cli_info.startyear,
+            NYEARS=cli_info.nyears,
+            CASENAME="CMIP.Synthetic",
+            TIME_RES="day",
+            DATA_FORMAT="gfdl",
+        )
 
 
 if __name__ == "__main__":
