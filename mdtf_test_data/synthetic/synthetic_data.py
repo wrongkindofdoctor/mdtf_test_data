@@ -35,7 +35,7 @@ def dataset_stats(filename, var=None, limit=None):
     dset = xr.open_dataset(filename, use_cftime=True)
     dset = dset.isel(time=slice(0, limit)) if limit is not None else dset
     if var is None:
-        print(list(dset.variables))
+        raise ValueError(f"Please specify a variable from {list(dset.variables)}")
     else:
         means = dset[var].mean(axis=(0, -2, -1)).values
         stds = dset[var].std(axis=(0, -2, -1)).values

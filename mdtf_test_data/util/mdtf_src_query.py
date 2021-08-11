@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-from synthetic.synthetic_data import dataset_stats
+from mdtf_test_data.synthetic.synthetic_data import dataset_stats
 
 if __name__ == "__main__":
     filename = sys.argv[1]
