@@ -63,9 +63,24 @@ def synthetic_main(
             v,
             timeres=TIME_RES,
             attrs=yaml_dict[v + ".atts"],
-            fmt=DATA_FORMAT,
+            fmt=FORMAT,
             generator=generator,
             stats=stats,
             generator_kwargs=generator_kwargs,
         )
-        write_to_netcdf(dset_out, f"{CASENAME}/{TIME_RES}/{CASENAME}.{v}.{TIME_RES}.nc")
+
+        if DATA_FORMAT == "cmip":
+            # formulate the date string in the file name
+            date_string = (str(STARTYEAR).zfill(4),str(STARTYEAR + NYEARS - 1).zfill(4))
+            if TIME_RES == "mon":
+                date_string = (date_string[0]+"01",date_string[1]+"12")
+            elif TIME_RES == "day":
+                date_string = (date_string[0]+"0101",date_string[1]+"1231")
+            date_string = ("-").join(list(date_string))
+
+            outname = f"{v}_{TIME_RES}_{CASENAME.replace('.','_')}_r1i1p1f1_gr1_{date_string}.nc"
+
+        else:
+            outname = f"{CASENAME}.{v}.{TIME_RES}.nc"
+
+        write_to_netcdf(dset_out, f"{CASENAME}/{TIME_RES}/{outname}")
