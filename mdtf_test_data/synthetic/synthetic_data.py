@@ -3,16 +3,12 @@
 
 ___all__ = [
     "dataset_stats",
-    "generate_daily_time_axis",
-    "generate_hourly_time_axis",
-    "generate_monthly_time_axis",
     "generate_synthetic_dataset",
     "generate_random_array",
     "gfdl_vertical_coord",
     "gfdl_plev19_vertical_coord",
     "ncar_hybrid_coord",
     "write_to_netcdf",
-    "generate_monthly_time_axis",
 ]
 
 import cftime
@@ -20,6 +16,10 @@ import xarray as xr
 import numpy as np
 from mdtf_test_data.util.rectilinear import construct_rect_grid
 import mdtf_test_data.generators as generators
+
+from mdtf_test_data.synthetic.time import generate_monthly_time_axis
+from mdtf_test_data.synthetic.time import generate_daily_time_axis
+from mdtf_test_data.synthetic.time import generate_hourly_time_axis
 
 
 def dataset_stats(filename, var=None, limit=None):
@@ -52,129 +52,6 @@ def dataset_stats(filename, var=None, limit=None):
     dset.close()
 
     return list(zip(means, stds))
-
-
-def generate_daily_time_axis(startyear, nyears, timefmt="ncar"):
-    """Construct a daily noleap time dimension with associated bounds
-
-    Parameters
-    ----------
-    startyear : int
-        Start year for requested time axis
-    nyears : int
-        Number of years in requested time axis
-    timefmt : str, optional
-        Time axis format, either "gfdl" or "ncar", "ncar" by default
-
-    Returns
-    -------
-    xarray.DataArray
-        time and time_bnds xarray DataArray types
-    """
-    daysinmonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    months = list(np.arange(1, 13))
-    days = [np.arange(1, daysinmonth[n] + 1) for n, x in enumerate(months)]
-    days = [item for sublist in days for item in sublist]
-    days = days * nyears
-    months = [[months[n]] * daysinmonth[n] for n, x in enumerate(months)]
-    months = [item for sublist in months for item in sublist]
-    months = months * nyears
-    years = list(np.arange(startyear, startyear + nyears))
-    years = [[years[x]] * 365 for x in range(0, len(years))]
-    years = [item for sublist in years for item in sublist]
-
-    if timefmt == "gfdl":
-        hours = [12] * len(days)
-    else:
-        hours = [0] * len(days)
-
-    timetuple = list(zip(years, months, days, hours))
-    boundstuple = list(zip(years, months, days)) + [(startyear + nyears, 1, 1)]
-
-    return xr_times_from_tuples(timetuple, boundstuple, timefmt=timefmt)
-
-
-def generate_hourly_time_axis(startyear, nyears, dhour, timefmt="ncar"):
-    """Construct an hourly noleap time dimension with associated bounds
-
-    Parameters
-    ----------
-    startyear : int
-        Start year for requested time axis
-    nyears : int
-        Number of years in requested time axis
-    dhour : int
-        Delta skip for hours (e.g. 1 hour, 3 hours, 6 hours)
-    timefmt : str, optional
-        Time axis format, either "gfdl" or "ncar", "ncar" by default
-
-    Returns
-    -------
-    xarray.DataArray
-        time and time_bnds xarray DataArray types
-    """
-
-    nhours = int(24 / dhour)
-    hours = list(np.arange(0, 24, dhour))
-    hours = hours * 365 * nyears
-    daysinmonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    months = list(np.arange(1, 13))
-    days = [np.arange(1, daysinmonth[n] + 1) for n in range(0, len(months))]
-    days = [item for sublist in days for item in sublist]
-    days = [item for item in days for i in range(nhours)]
-    days = days * nyears
-    months = [[months[n]] * daysinmonth[n] for n, x in enumerate(months)]
-    months = [item for sublist in months for item in sublist]
-    months = [item for item in months for i in range(nhours)]
-    months = months * nyears
-    years = list(np.arange(startyear, startyear + nyears))
-    years = [[years[x]] * 365 for x in range(0, len(years))]
-    years = [item for sublist in years for item in sublist]
-    years = [item for item in years for i in range(nhours)]
-    timetuple = list(zip(years, months, days, hours))
-    boundstuple = (
-        [(startyear, 1, 1, 0)]
-        + list(zip(years, months, days, hours))
-        + [(startyear + nyears, 1, 1, dhour)]
-    )
-    boundstuple = boundstuple[0:-1]
-
-    return xr_times_from_tuples(timetuple, boundstuple, timefmt=timefmt)
-
-
-def generate_monthly_time_axis(startyear, nyears, timefmt="ncar"):
-    """Construct a monthly noleap time dimension with associated bounds
-
-    Parameters
-    ----------
-    startyear : int
-        Start year for requested time axis
-    nyears : int
-        Number of years in requested time axis
-    timefmt : str, optional
-        Time axis format, either "gfdl" or "ncar", "ncar" by default
-
-    Returns
-    -------
-    xarray.DataArray
-        time and time_bnds xarray DataArray types
-    """
-
-    nyears = nyears + 1
-
-    years = np.arange(startyear, startyear + nyears)
-    years = [year for year in years for x in range(12)]
-    months = list(np.arange(1, 13)) * nyears
-    days = 1 if timefmt == "ncar" else 15
-    days = [days] * len(months)
-    timetuple = list(zip(years, months, days))
-    timetuple = timetuple[1:-11] if timefmt == "ncar" else timetuple[0:-12]
-
-    days = [1] * len(months)
-    boundstuple = list(zip(years, months, days))
-    boundstuple = boundstuple[0:-11]
-
-    return xr_times_from_tuples(timetuple, boundstuple, timefmt=timefmt)
 
 
 def generate_synthetic_dataset(
