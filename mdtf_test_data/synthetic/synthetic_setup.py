@@ -55,6 +55,13 @@ def synthetic_main(
         )
         # vinfo = yaml_dict[v]
         # print(vinfo)
+
+        coords = (
+            yaml_dict[v]["coordinates"]
+            if "coordinates" in yaml_dict[v].keys()
+            else None
+        )
+
         dset_out = generate_synthetic_dataset(
             DLON,
             DLAT,
@@ -63,19 +70,23 @@ def synthetic_main(
             v,
             timeres=TIME_RES,
             attrs=yaml_dict[v + ".atts"],
-            fmt=FORMAT,
+            fmt=DATA_FORMAT,
             generator=generator,
             stats=stats,
+            coords=coords,
             generator_kwargs=generator_kwargs,
         )
 
         if DATA_FORMAT == "cmip":
             # formulate the date string in the file name
-            date_string = (str(STARTYEAR).zfill(4),str(STARTYEAR + NYEARS - 1).zfill(4))
+            date_string = (
+                str(STARTYEAR).zfill(4),
+                str(STARTYEAR + NYEARS - 1).zfill(4),
+            )
             if TIME_RES == "mon":
-                date_string = (date_string[0]+"01",date_string[1]+"12")
+                date_string = (date_string[0] + "01", date_string[1] + "12")
             elif TIME_RES == "day":
-                date_string = (date_string[0]+"0101",date_string[1]+"1231")
+                date_string = (date_string[0] + "0101", date_string[1] + "1231")
             date_string = ("-").join(list(date_string))
 
             outname = f"{v}_{TIME_RES}_{CASENAME.replace('.','_')}_r1i1p1f1_gr1_{date_string}.nc"

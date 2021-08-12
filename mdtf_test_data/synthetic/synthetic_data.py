@@ -63,6 +63,7 @@ def generate_synthetic_dataset(
     timeres="mon",
     attrs=None,
     fmt="ncar",
+    coords=None,
     generator="normal",
     generator_kwargs=None,
     stats=None,
@@ -98,7 +99,11 @@ def generate_synthetic_dataset(
 
     attrs = {} if attrs is None else attrs
 
-    dset = construct_rect_grid(dlon, dlat, add_attrs=True, attr_fmt=fmt)
+    do_bounds = True if fmt == "cmip" else False
+
+    dset = construct_rect_grid(
+        dlon, dlat, add_attrs=True, attr_fmt=fmt, bounds=do_bounds
+    )
     lat = dset.lat
     lon = dset.lon
     xyshape = (len(dset["lat"]), len(dset["lon"]))
@@ -151,7 +156,63 @@ def generate_synthetic_dataset(
     else:
         dset[varname] = xr.DataArray(data, coords=(time, lat, lon), attrs=attrs)
 
+    if coords is not None:
+        dset[coords["name"]] = xr.DataArray(coords["value"], attrs=coords["atts"])
+        dset[varname].attrs = {**dset[varname].attrs, "coordinates": coords["name"]}
+
     dset.attrs["convention"] = fmt
+
+    if fmt == "cmip":
+        dset["bnds"].attrs = {"long_name": "vertex number"}
+        cmip_global_atts = [
+            "external_variables",
+            "history",
+            "table_id",
+            "activity_id",
+            "branch_method",
+            "branch_time_in_child",
+            "branch_time_in_parent",
+            "comment",
+            "contact",
+            "Conventions",
+            "creation_date",
+            "data_specs_version",
+            "experiment",
+            "experiment_id",
+            "forcing_index",
+            "frequency",
+            "further_info_url",
+            "grid",
+            "grid_label",
+            "initialization_index",
+            "institution",
+            "institution_id",
+            "license",
+            "mip_era" "nominal_resolution",
+            "parent_activity_id",
+            "parent_experiment_id",
+            "parent_mip_era",
+            "parent_source_id",
+            "parent_time_units",
+            "parent_variant_label",
+            "physics_index",
+            "product",
+            "realization_index",
+            "realm",
+            "source",
+            "source_id",
+            "source_type",
+            "sub_experiment",
+            "sub_experiment_id",
+            "title",
+            "tracking_id",
+            "variable_id",
+            "variant_info",
+            "references" "variant_label",
+        ]
+
+        cmip_global_atts = {x: "" for x in cmip_global_atts}
+        dset.attrs = {**dset.attrs, **cmip_global_atts}
 
     return dset
 
@@ -584,5 +645,5 @@ def write_to_netcdf(dset_out, outfile, time_dtype="float"):
         else:
             dset_out[var].encoding["_FillValue"] = None
 
-    #encoding = {"lat_bnds": {"units": "degrees_north"}}
+    # encoding = {"lat_bnds": {"units": "degrees_north"}}
     dset_out.to_netcdf(outfile, encoding=encoding)

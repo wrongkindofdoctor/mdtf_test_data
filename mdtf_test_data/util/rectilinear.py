@@ -56,7 +56,7 @@ def construct_rect_grid(dlon, dlat, add_attrs=False, attr_fmt="ncar", bounds=Fal
         lat_bnds = np.array(list(zip(lat_bnds[0:-1], lat_bnds[1::])))
         lon_bnds = np.array(list(zip(lon_bnds[0:-1], lon_bnds[1::])))
 
-        bnds = np.array([0, 1])
+        bnds = np.array([0.0, 1.0])
 
         dset["lat_bnds"] = xr.DataArray(lat_bnds, coords=(dset.lat, ("bnds", bnds)))
         dset["lon_bnds"] = xr.DataArray(lon_bnds, coords=(dset.lon, ("bnds", bnds)))
@@ -94,6 +94,48 @@ def construct_rect_grid(dlon, dlat, add_attrs=False, attr_fmt="ncar", bounds=Fal
             )
             dset["lon_bnds"].attrs = (
                 {"long_name": "longitude bounds", "cartesian_axis": "X"}
+                if add_attrs
+                else {}
+            )
+
+    elif attr_fmt == "cmip":
+        dset["lat"].attrs = (
+            {
+                "long_name": "latitude",
+                "units": "degrees_north",
+                "axis": "Y",
+                "standard_name": "latitude",
+                "cell_methods": "time: point",
+            }
+            if add_attrs
+            else {}
+        )
+        dset["lon"].attrs = (
+            {
+                "long_name": "longitude",
+                "units": "degrees_east",
+                "axis": "X",
+                "standard_name": "longitude",
+                "cell_methods": "time: point",
+            }
+            if add_attrs
+            else {}
+        )
+
+        if bounds:
+            dset["bnds"] = xr.DataArray(bnds, dims={"bnds": bnds})
+            dset["bnds"].attrs["long_name"] = "vertex number"
+
+            dset["lat"].attrs["bounds"] = "lat_bnds"
+            dset["lon"].attrs["bounds"] = "lon_bnds"
+
+            dset["lat_bnds"].attrs = (
+                {"long_name": "latitude bounds", "axis": "Y", "units": "degrees_north"}
+                if add_attrs
+                else {}
+            )
+            dset["lon_bnds"].attrs = (
+                {"long_name": "longitude bounds", "axis": "X", "units": "degrees_east"}
                 if add_attrs
                 else {}
             )
