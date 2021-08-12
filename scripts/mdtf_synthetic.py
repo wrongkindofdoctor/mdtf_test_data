@@ -155,7 +155,7 @@ def main():
             NYEARS=cli_info.nyears,
             CASENAME="CMIP.Synthetic",
             TIME_RES="day",
-            DATA_FORMAT="gfdl",
+            DATA_FORMAT="cmip",
         )
 
 
