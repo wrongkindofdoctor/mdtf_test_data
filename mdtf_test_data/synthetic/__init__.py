@@ -8,3 +8,4 @@ from .synthetic_data import (
 
 from . import time
 from . import vertical
+from . import horizontal

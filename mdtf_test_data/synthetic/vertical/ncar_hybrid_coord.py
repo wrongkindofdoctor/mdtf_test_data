@@ -7,7 +7,6 @@ ___all__ = [
 import cftime
 import xarray as xr
 import numpy as np
-from mdtf_test_data.util.rectilinear import construct_rect_grid
 import mdtf_test_data.generators as generators
 
 
