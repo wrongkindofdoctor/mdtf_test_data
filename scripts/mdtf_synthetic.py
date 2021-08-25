@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 """ mdtf_test_data driver program """
 import sys
+# add mdtf_test_data to system path--uncomment this for testing new PRs that are not
+# merged into mdtf_test_data
+# run pip uninstall mdtf_test_data
+# activate your test environemnt (test_env)
+# run python ./scripts/mdtf_synthetic.py [commands] as usual
+sys.path.insert(0, '../mdtf_test_data')
 import mdtf_test_data
 from mdtf_test_data.synthetic.synthetic_setup import synthetic_main
 from mdtf_test_data.util.cli import cli_holder
