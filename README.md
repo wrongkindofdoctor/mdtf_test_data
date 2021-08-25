@@ -11,7 +11,6 @@ cftime
 * envyaml
 * numpy
 * pandas
-* pickle
 * pytest
 * xarray
 * xESMF
@@ -36,7 +35,7 @@ usage: ./scripts/mdtf_synthetic.py [-h] [-c CONVENTION] [--startyear year] [--ny
 [--dlat latitude resolution in degrees] [--dlon longitude resolution in degrees] [--unittest]
 
 Required arguments:
-  -c, --convention      Data convention [NCAR or GFDL]
+  -c, --convention      Data convention [NCAR, CESM, GFDL, CMIP]
 
 Optional arguments:
   -h, --help            show this help message and exit
@@ -49,12 +48,18 @@ Optional arguments:
 To generate NCAR CESM output in a directory called `NCAR.Synthetic`:
 
 ```
-./scripts/mdtf_synthetic.py -c NCAR --nyears 7
+./scripts/mdtf_synthetic.py -c [ NCAR | CESM ] --nyears 7 
 ```
+Note that "NCAR" and "CESM" are both valid input values that generate output files appended with "NCAR_Synthetic".
 
 To generate GFDL CM4 output in a directory called `GFDL.Synthetic`:
 ```
 ./scripts/mdtf_synthetic.py -c GFDL --nyears 10
+```
+
+To generate CMIP output in a directory called `CMIP.Synthetic`:
+```
+./scripts/mdtf_synthetic.py -c CMIP --nyears 10
 ```
 
 To coarsen an existing NetCDF file:
