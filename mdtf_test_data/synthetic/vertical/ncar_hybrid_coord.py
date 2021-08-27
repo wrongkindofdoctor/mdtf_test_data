@@ -10,10 +10,6 @@ import numpy as np
 from mdtf_test_data.util.rectilinear import construct_rect_grid
 import mdtf_test_data.generators as generators
 
-from mdtf_test_data.synthetic.time import generate_monthly_time_axis
-from mdtf_test_data.synthetic.time import generate_daily_time_axis
-from mdtf_test_data.synthetic.time import generate_hourly_time_axis
-
 
 def ncar_hybrid_coord():
     """Generates NCAR CAM2 hybrid vertical coordinate
