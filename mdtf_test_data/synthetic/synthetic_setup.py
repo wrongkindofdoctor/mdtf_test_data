@@ -30,24 +30,25 @@ def create_output_dirs(CASENAME="",
                        TIME_RES="day"
                       ):
     """Create output data directories"""
+
+    out_dir_root = CASENAME
     print("Creating output data directories")
     if "CMIP" in CASENAME:
         date_string = generate_date_string(STARTYEAR=STARTYEAR,
                                            NYEARS=NYEARS,
                                            TIME_RES=TIME_RES
                                            )
-        outname = f"{CASENAME.replace('.','_')}_r1i1p1f1_gr1_{date_string}"
-        CASENAME = outname
+        out_dir_root= f"{CASENAME.replace('.','_')}_r1i1p1f1_gr1_{date_string}"
 
-    if not os.path.exists(f"{CASENAME}/day"):
-        os.makedirs(f"{CASENAME}/day")
+    if not os.path.exists(f"{out_dir_root}/day"):
+        os.makedirs(f"{out_dir_root}/day")
     if "NCAR" in CASENAME:
-        if not os.path.exists(f"{CASENAME}/mon"):
-            os.makedirs(f"{CASENAME}/mon")
-        if not os.path.exists(f"{CASENAME}/3hr"):
-            os.makedirs(f"{CASENAME}/3hr")
-        if not os.path.exists(f"{CASENAME}/1hr"):
-            os.makedirs(f"{CASENAME}/1hr")
+        if not os.path.exists(f"{out_dir_root}/mon"):
+            os.makedirs(f"{out_dir_root}/mon")
+        if not os.path.exists(f"{out_dir_root}/3hr"):
+            os.makedirs(f"{out_dir_root}/3hr")
+        if not os.path.exists(f"{out_dir_root}/1hr"):
+            os.makedirs(f"{out_dir_root}/1hr")
 
 def synthetic_main(
     yaml_dict={},
@@ -113,8 +114,9 @@ def synthetic_main(
                                                )
 
             outname = f"{CASENAME.replace('.','_')}_r1i1p1f1_gr1_{date_string}.{v}.{TIME_RES}.nc"
-
+            # output root directory and file name base must match
+            out_dir_root = f"{CASENAME.replace('.','_')}_r1i1p1f1_gr1_{date_string}"
         else:
             outname = f"{CASENAME}.{v}.{TIME_RES}.nc"
-
-        write_to_netcdf(dset_out, f"{CASENAME}/{TIME_RES}/{outname}")
+            out_dir_root = CASENAME
+        write_to_netcdf(dset_out, f"{out_dir_root}/{TIME_RES}/{outname}")
