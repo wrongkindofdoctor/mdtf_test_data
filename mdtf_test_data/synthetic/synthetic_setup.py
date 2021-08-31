@@ -7,9 +7,38 @@ from .synthetic_data import generate_synthetic_dataset
 from .synthetic_data import write_to_netcdf
 
 
-def create_output_dirs(CASENAME=""):
+def generate_date_string(STARTYEAR=1,
+                         NYEARS=1,
+                         TIME_RES=""
+                        ):
+    """ formulate the date string in the file name"""
+    date_string = (
+        str(STARTYEAR).zfill(4),
+        str(STARTYEAR + NYEARS - 1).zfill(4),
+    )
+    if TIME_RES == "mon":
+        date_string = (date_string[0] + "01", date_string[1] + "12")
+    elif TIME_RES == "day":
+        date_string = (date_string[0] + "0101", date_string[1] + "1231")
+        date_string = ("-").join(list(date_string))
+
+    return date_string
+
+def create_output_dirs(CASENAME="",
+                       STARTYEAR=1,
+                       NYEARS=10,
+                       TIME_RES="day"
+                      ):
     """Create output data directories"""
     print("Creating output data directories")
+    if "CMIP" in CASENAME:
+        date_string = generate_date_string(STARTYEAR=STARTYEAR,
+                                           NYEARS=NYEARS,
+                                           TIME_RES=TIME_RES
+                                           )
+        outname = f"{CASENAME.replace('.','_')}_r1i1p1f1_gr1_{date_string}"
+        CASENAME = outname
+
     if not os.path.exists(f"{CASENAME}/day"):
         os.makedirs(f"{CASENAME}/day")
     if "NCAR" in CASENAME:
@@ -19,7 +48,6 @@ def create_output_dirs(CASENAME=""):
             os.makedirs(f"{CASENAME}/3hr")
         if not os.path.exists(f"{CASENAME}/1hr"):
             os.makedirs(f"{CASENAME}/1hr")
-
 
 def synthetic_main(
     yaml_dict={},
@@ -79,17 +107,12 @@ def synthetic_main(
 
         if DATA_FORMAT == "cmip":
             # formulate the date string in the file name
-            date_string = (
-                str(STARTYEAR).zfill(4),
-                str(STARTYEAR + NYEARS - 1).zfill(4),
-            )
-            if TIME_RES == "mon":
-                date_string = (date_string[0] + "01", date_string[1] + "12")
-            elif TIME_RES == "day":
-                date_string = (date_string[0] + "0101", date_string[1] + "1231")
-            date_string = ("-").join(list(date_string))
+            date_string = generate_date_string(STARTYEAR=STARTYEAR,
+                                               NYEARS=NYEARS,
+                                               TIME_RES=TIME_RES
+                                               )
 
-            outname = f"{v}_{TIME_RES}_{CASENAME.replace('.','_')}_r1i1p1f1_gr1_{date_string}.nc"
+            outname = f"{CASENAME.replace('.','_')}_r1i1p1f1_gr1_{date_string}.{v}.{TIME_RES}.nc"
 
         else:
             outname = f"{CASENAME}.{v}.{TIME_RES}.nc"
