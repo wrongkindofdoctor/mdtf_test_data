@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import xarray as xr
+
 __all__ = ["create_output_dirs", "synthetic_main"]
 """ Script to generate synthetic GFDL CM4 output """
 import os
@@ -67,6 +69,11 @@ def synthetic_main(
     # -- Create Data
     print("Generating data with time resolution of ", TIME_RES)
     for v in var_names:
+        static = (
+            yaml_dict[v + ".static"]
+            if str(v + ".static") in list(yaml_dict.keys())
+            else False
+        )
         stats = (
             yaml_dict[v + ".stats"]
             if str(v + ".stats") in list(yaml_dict.keys())
@@ -91,6 +98,12 @@ def synthetic_main(
             else None
         )
 
+        if str(v + ".source") in list(yaml_dict.keys()):
+            _ds = xr.open_dataset(yaml_dict[v + ".source.filename"])
+            data = _ds[yaml_dict[v + ".source.variable"]].values
+        else:
+            data = None
+
         dset_out = generate_synthetic_dataset(
             DLON,
             DLAT,
@@ -102,7 +115,9 @@ def synthetic_main(
             fmt=DATA_FORMAT,
             generator=generator,
             stats=stats,
+            static=static,
             coords=coords,
+            data=data,
             generator_kwargs=generator_kwargs,
         )
 
