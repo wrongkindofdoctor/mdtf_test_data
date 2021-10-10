@@ -64,7 +64,7 @@ def construct_tripolar_grid(
 
     if retain_coords is True:
         dset[lat.name] = lat
-        dset[lon.name] = lat
+        dset[lon.name] = lon
         dset[wet.name] = wet
 
         if add_attrs is True:
@@ -73,8 +73,24 @@ def construct_tripolar_grid(
                 dset[lon.name].attrs = {}
                 dset[wet.name].attrs = {}
             elif attr_fmt == "ncar":
-                dset[lat.name].attrs = {}
-                dset[lon.name].attrs = {}
+                dset[lat.name].attrs = {
+                    "axis": "Y",
+                    "standard_name": "latitude",
+                    "title": "Latitude",
+                    "type": "double",
+                    "units": "degrees_north",
+                    "valid_max": 90.0,
+                    "valid_min": -90.0,
+                }
+                dset[lon.name].attrs = {
+                    "axis": "X",
+                    "standard_name": "longitude",
+                    "title": "Longitude",
+                    "type": "double",
+                    "units": "degrees_east",
+                    "valid_max": 360.0,
+                    "valid_min": 0.0,
+                }
                 dset[wet.name].attrs = {}
             else:
                 raise ValueError("Unknown attribute format")
@@ -83,5 +99,24 @@ def construct_tripolar_grid(
             dset[lat.name].attrs = {}
             dset[lon.name].attrs = {}
             dset[wet.name].attrs = {}
+
+    if attr_fmt == "ncar":
+        dset = dset.rename({"xh": "nlon", "yh": "nlat"})
+
+        lat_range = np.array(np.arange(1, len(dset["nlat"]) + 1, dtype=np.intc))
+        dset["nlat"] = xr.DataArray(lat_range, dims=("nlat"))
+        dset["nlat"].attrs = {
+            "long_name": "cell index along second dimension",
+            "units": "1",
+        }
+
+        lon_range = np.array(np.arange(1, len(dset["nlon"]) + 1, dtype=np.intc))
+        dset["nlon"] = xr.DataArray(lon_range, dims=("nlon"))
+        dset["nlon"].attrs = {
+            "long_name": "cell index along first dimension",
+            "units": "1",
+        }
+
+        dset = dset.rename({lat.name: "lat", lon.name: "lon"})
 
     return dset
