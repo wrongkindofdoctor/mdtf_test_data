@@ -44,6 +44,16 @@ def create_output_dirs(CASENAME="",
                                            )
         out_dir_root= f"{CASENAME.replace('.','_')}_r1i1p1f1_gr1_{date_string}"
 
+    if not os.path.exists(f"{CASENAME}/day"):
+        os.makedirs(f"{CASENAME}/day")
+    if not os.path.exists(f"{CASENAME}/mon"):
+        os.makedirs(f"{CASENAME}/mon")
+    if "NCAR" in CASENAME:
+        if not os.path.exists(f"{CASENAME}/3hr"):
+            os.makedirs(f"{CASENAME}/3hr")
+        if not os.path.exists(f"{CASENAME}/1hr"):
+            os.makedirs(f"{CASENAME}/1hr")
+
     if not os.path.exists(f"{out_dir_root}/day"):
         os.makedirs(f"{out_dir_root}/day")
     if "NCAR" in CASENAME:
@@ -91,8 +101,16 @@ def synthetic_main(
             if str(v + ".generator.args") in list(yaml_dict.keys())
             else {}
         )
-        # vinfo = yaml_dict[v]
-        # print(vinfo)
+        grid = (
+            yaml_dict[v + ".grid"]
+            if str(v + ".grid") in list(yaml_dict.keys())
+            else "standard"
+        )
+
+        assert grid in [
+            "tripolar",
+            "standard",
+        ], f"Unknown grid `{grid}` specified for variable `{v}`"
 
         coords = (
             yaml_dict[v]["coordinates"]
@@ -139,6 +157,7 @@ def synthetic_main(
             coords=coords,
             data=data,
             generator_kwargs=generator_kwargs,
+            grid=grid,
         )
 
         if DATA_FORMAT == "cmip":
