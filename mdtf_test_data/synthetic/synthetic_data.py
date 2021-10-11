@@ -209,7 +209,6 @@ def generate_synthetic_dataset(
         dset.set_coords(("lat", "lon"))
 
     if coords is not None:
-        print(coords)
         dset[coords["name"]] = xr.DataArray(coords["value"], attrs=coords["atts"])
         dset[varname].attrs = {**dset[varname].attrs, "coordinates": coords["name"]}
 
