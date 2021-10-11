@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
+import warnings
 import xarray as xr
+import pkg_resources as pkgr
 
 __all__ = ["create_output_dirs", "synthetic_main"]
 """ Script to generate synthetic GFDL CM4 output """
@@ -98,9 +100,27 @@ def synthetic_main(
             else None
         )
 
-        if str(v + ".source") in list(yaml_dict.keys()):
-            _ds = xr.open_dataset(yaml_dict[v + ".source.filename"])
-            data = _ds[yaml_dict[v + ".source.variable"]].values
+        def _load_default_static():
+            """Function to read packaged static file"""
+            _ds = pkgr.resource_filename(
+                "mdtf_test_data", f"resources/ocean_static_5deg.nc"
+            )
+            return xr.open_dataset(_ds)["areacello"].values
+
+        # Load the ocean static file
+        if static:
+            if str(v + ".source") in list(yaml_dict.keys()):
+                staticfilepath = yaml_dict[v + ".source.filename"]
+                if os.path.exists(staticfilepath):
+                    _ds = xr.open_dataset(staticfilepath)
+                    data = _ds[yaml_dict[v + ".source.variable"]].values
+                else:
+                    raise ValueError(
+                        f"Specified ocean static file does not exist: {staticfilepath}"
+                    )
+            else:
+                warnings.warn("Using default 5-degree ocean static file for grid")
+                data = _load_default_static()
         else:
             data = None
 
