@@ -101,6 +101,7 @@ def mom6_z_coord():
     ]
 
     z_i_attrs = {
+        "standard_name": "depth_at_cell_interface",
         "long_name": "Depth at interface",
         "units": "meters",
         "axis": "Z",
@@ -108,11 +109,21 @@ def mom6_z_coord():
     }
 
     z_l_attrs = {
+        "standard_name": "depth_at_cell_center",
         "long_name": "Depth at cell center",
         "units": "meters",
         "axis": "Z",
         "positive": "down",
         "edges": "z_i",
+    }
+
+    # duplicate of z_l with CMIP standard attributes
+    lev_attrs = {
+        "standard_name": "depth",
+        "long_name": "depth",
+        "units": "meters",
+        "axis": "Z",
+        "positive": "down"
     }
 
     dset_out = xr.Dataset()
@@ -121,6 +132,9 @@ def mom6_z_coord():
     )
     dset_out["z_i"] = xr.DataArray(
         z_i, dims={"z_i": z_i}, coords={"z_i": z_i}, attrs=z_i_attrs
+    )
+    dset_out["lev"] = xr.DataArray(
+        z_l, dims={"lev": z_l}, coords={"lev": z_l}, attrs=lev_attrs
     )
 
     return dset_out

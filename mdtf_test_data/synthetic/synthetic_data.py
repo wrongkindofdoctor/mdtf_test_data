@@ -164,12 +164,11 @@ def generate_synthetic_dataset(
                     dset = dset.merge(gfdl_vertical_coord())
                     lev = dset.pfull
             elif fmt == "cmip" and grid == "tripolar":
-                if len(stats) == 35:
-                    dset = dset.merge(mom6_z_coord())
-                    lev = dset.z_l
-                elif len(stats) == 36:
-                    dset = dset.merge(mom6_z_coord())
-                    lev = dset.z_i
+                dset = dset.merge(mom6_z_coord())
+                lev = dset.lev
+                assert len(stats) == len(lev),\
+                    f' Length of stats {data.shape[1]} must match number of levels {len(lev)}.'
+
     # Step 4: define the synthetic data generator kernel
     generator_kwargs = {} if generator_kwargs is None else generator_kwargs
     if stats is not None:
