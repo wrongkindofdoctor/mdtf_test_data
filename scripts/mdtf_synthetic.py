@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 """ mdtf_test_data driver program """
 import sys
+sys.path.insert(0, '../mdtf_test_data')
+import sys
 import mdtf_test_data
 from mdtf_test_data.synthetic.synthetic_setup import synthetic_main
 from mdtf_test_data.util.cli import cli_holder
@@ -9,7 +11,6 @@ import pkg_resources as pkgr
 from envyaml import EnvYAML
 
 MDTF_PACKAGE_PATH = mdtf_test_data.__path__[0]
-
 
 def read_yaml(file_name):
     """A function to read YAML files"""

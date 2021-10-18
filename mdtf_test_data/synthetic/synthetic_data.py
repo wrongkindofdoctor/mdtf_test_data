@@ -22,6 +22,7 @@ from mdtf_test_data.synthetic.time import generate_hourly_time_axis
 from mdtf_test_data.synthetic.vertical import gfdl_plev19_vertical_coord
 from mdtf_test_data.synthetic.vertical import gfdl_vertical_coord
 from mdtf_test_data.synthetic.vertical import ncar_hybrid_coord
+from mdtf_test_data.synthetic.vertical import mom6_z_coord
 
 
 def dataset_stats(filename, var=None, limit=None):
@@ -155,14 +156,20 @@ def generate_synthetic_dataset(
             if fmt == "ncar":
                 dset = dset.merge(ncar_hybrid_coord())
                 lev = dset.lev
-            elif fmt == "gfdl":
+            elif fmt == "gfdl" :
                 if len(stats) == 19:
                     dset = dset.merge(gfdl_plev19_vertical_coord())
                     lev = dset.plev19
                 else:
                     dset = dset.merge(gfdl_vertical_coord())
                     lev = dset.pfull
-
+            elif fmt == "cmip" and grid == "tripolar":
+                if len(stats) == 35:
+                    dset = dset.merge(mom6_z_coord())
+                    lev = dset.z_l
+                elif len(stats) == 36:
+                    dset = dset.merge(mom6_z_coord())
+                    lev = dset.z_i
     # Step 4: define the synthetic data generator kernel
     generator_kwargs = {} if generator_kwargs is None else generator_kwargs
     if stats is not None:
@@ -191,7 +198,7 @@ def generate_synthetic_dataset(
         if len(data.shape) == 4:
             assert data.shape[1] == len(
                 lev
-            ), "Length of stats must match number of levels"
+            ),  f' Length of stats {data.shape[1]} must match number of levels {len(lev)}.'
             dset[varname] = xr.DataArray(data, coords=(lev, lat, lon), attrs=attrs)
         else:
             dset[varname] = xr.DataArray(data, coords=(lat, lon), attrs=attrs)
@@ -200,7 +207,7 @@ def generate_synthetic_dataset(
             print(varname)
             assert data.shape[1] == len(
                 lev
-            ), "Length of stats must match number of levels"
+            ), f' Length of stats {data.shape[1]} must match number of levels {len(lev)}.'
             dset[varname] = xr.DataArray(
                 data, coords=(time, lev, lat, lon), attrs=attrs
             )
