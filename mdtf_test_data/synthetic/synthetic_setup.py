@@ -62,7 +62,7 @@ def synthetic_main(
     DATA_FORMAT="",
 ):
     """Main script to generate synthetic data using GFDL naming conventions"""
-    create_output_dirs(CASENAME)
+    create_output_dirs(CASENAME, STARTYEAR=STARTYEAR, NYEARS=NYEARS)
     # parse the yaml dictionary
     var_names = yaml_dict["variables.name"]
     # -- Create Data
