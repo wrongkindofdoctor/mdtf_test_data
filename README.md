@@ -16,14 +16,13 @@ cftime
 * xESMF
 
 ## Getting the code
-```
-git clone https://github.com/jkrasting/mdtf_test_data.git
-```
+
+The mdtf_test_data package is available on [PyPI](https://pypi.org/project/mdtf-test-data/). 
 
 ## Installation
 ```
-cd mdtf_test_data
-pip install .
+mkdir mdtf_test_data && cd mdtf_test_data
+pip install mdtf-test-data
 ```
 
 ## Usage
@@ -31,7 +30,7 @@ This package can be used to generate fully-synthetic datasets based on NCAR's
 CESM2 and GFDL's CM4 model output that can be used to test the MDTF-Diagnostics package.
 
 ```
-usage: ./scripts/mdtf_synthetic.py [-h] [-c CONVENTION] [--startyear year] [--nyears years]
+usage: mdtf_synthetic.py [-h] [-c CONVENTION] [--startyear year] [--nyears years]
 [--dlat latitude resolution in degrees] [--dlon longitude resolution in degrees] [--unittest]
 
 Required arguments:
@@ -48,23 +47,24 @@ Optional arguments:
 To generate NCAR CESM output in a directory called `NCAR.Synthetic`:
 
 ```
-./scripts/mdtf_synthetic.py -c [ NCAR | CESM ] --nyears 7 
+mdtf_synthetic.py -c [ NCAR | CESM ] --nyears 7 
 ```
 Note that "NCAR" and "CESM" are both valid input values that generate output files appended with "NCAR_Synthetic".
 
 To generate GFDL CM4 output in a directory called `GFDL.Synthetic`:
 ```
-./scripts/mdtf_synthetic.py -c GFDL --nyears 10
+mdtf_synthetic.py -c GFDL --nyears 10
 ```
 
 To generate CMIP output in a directory called `CMIP.Synthetic`:
 ```
-./scripts/mdtf_synthetic.py -c CMIP --nyears 10
+mdtf_synthetic.py -c CMIP --nyears 10
 ```
 
 To coarsen an existing NetCDF file:
 ```
-mdtf_synthetic/util/mdtf-coarsen.py
+git clone https://github.com/jkrasting/mdtf_test_data.git
+cd mdtf_test_data
 usage: mdtf_synthetic/util/mdtf-coarsen.py [-h] [-r REGRID_METHOD] [-o OUTFILE] [-O] infile
 
 Coarsen a NetCDF file.
