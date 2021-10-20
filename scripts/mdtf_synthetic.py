@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 """ mdtf_test_data driver program """
 import sys
-sys.path.insert(0, '../mdtf_test_data')
-import sys
 import mdtf_test_data
 from mdtf_test_data.synthetic.synthetic_setup import synthetic_main
 from mdtf_test_data.util.cli import cli_holder
