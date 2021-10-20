@@ -10,6 +10,7 @@ from envyaml import EnvYAML
 
 MDTF_PACKAGE_PATH = mdtf_test_data.__path__[0]
 
+
 def read_yaml(file_name):
     """A function to read YAML files"""
     config = EnvYAML(file_name)
