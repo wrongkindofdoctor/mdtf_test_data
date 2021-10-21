@@ -11,7 +11,8 @@ ___all__ = [
 import cftime
 import xarray as xr
 import numpy as np
-from mdtf_test_data.util.rectilinear import construct_rect_grid
+from mdtf_test_data.synthetic.horizontal import construct_rect_grid
+from mdtf_test_data.synthetic.horizontal import construct_tripolar_grid
 import mdtf_test_data.generators as generators
 
 from mdtf_test_data.synthetic.time import generate_monthly_time_axis
@@ -21,6 +22,7 @@ from mdtf_test_data.synthetic.time import generate_hourly_time_axis
 from mdtf_test_data.synthetic.vertical import gfdl_plev19_vertical_coord
 from mdtf_test_data.synthetic.vertical import gfdl_vertical_coord
 from mdtf_test_data.synthetic.vertical import ncar_hybrid_coord
+from mdtf_test_data.synthetic.vertical import mom6_z_coord
 
 
 def dataset_stats(filename, var=None, limit=None):
@@ -68,6 +70,9 @@ def generate_synthetic_dataset(
     generator="normal",
     generator_kwargs=None,
     stats=None,
+    static=False,
+    data=None,
+    grid="standard",
 ):
     """Generates xarray dataset of syntheic data in NCAR format
 
@@ -91,6 +96,11 @@ def generate_synthetic_dataset(
         Variable attributes, by default None
     stats : tuple or list of tuples
         Array statistics in the format of [(mean,stddev)]
+    static : bool
+        Flag denoting if variable is static
+    grid : str
+        Type of output grid, either "standard" or "tripolar",
+        by default "standard"
 
     Returns
     -------
@@ -100,45 +110,68 @@ def generate_synthetic_dataset(
 
     attrs = {} if attrs is None else attrs
 
+    # some logical control flags
     do_bounds = True if fmt == "cmip" else False
 
-    dset = construct_rect_grid(
-        dlon, dlat, add_attrs=True, attr_fmt=fmt, bounds=do_bounds
-    )
-    lat = dset.lat
-    lon = dset.lon
-    xyshape = (len(dset["lat"]), len(dset["lon"]))
-
-    if timeres == "mon":
-        ds_time = generate_monthly_time_axis(startyear, nyears, timefmt=fmt)
-    elif timeres == "day":
-        ds_time = generate_daily_time_axis(startyear, nyears, timefmt=fmt)
-    elif timeres == "3hr":
-        ds_time = generate_hourly_time_axis(startyear, nyears, 3, timefmt=fmt)
-    elif timeres == "1hr":
-        ds_time = generate_hourly_time_axis(startyear, nyears, 1, timefmt=fmt)
+    # Step 1: set up the horizontal grid
+    if grid == "tripolar":
+        dset = construct_tripolar_grid(
+            attr_fmt="ncar", retain_coords=True, add_attrs=True
+        )
+        xyshape = dset["mask"].shape
+        lat = dset.nlat
+        lon = dset.nlon
     else:
-        print(timeres)
-        raise ValueError("Unknown time resolution requested")
+        dset = construct_rect_grid(
+            dlon, dlat, add_attrs=True, attr_fmt=fmt, bounds=do_bounds
+        )
+        lat = dset.lat
+        lon = dset.lon
+        xyshape = (len(dset["lat"]), len(dset["lon"]))
 
-    dset = ds_time.merge(dset)
-    time = dset["time"]
+    # Step 2: set up the time axis
+    if static is False:
+        if timeres == "mon":
+            ds_time = generate_monthly_time_axis(startyear, nyears, timefmt=fmt)
+        elif timeres == "day":
+            ds_time = generate_daily_time_axis(startyear, nyears, timefmt=fmt)
+        elif timeres == "3hr":
+            ds_time = generate_hourly_time_axis(startyear, nyears, 3, timefmt=fmt)
+        elif timeres == "1hr":
+            ds_time = generate_hourly_time_axis(startyear, nyears, 1, timefmt=fmt)
+        else:
+            print(timeres)
+            raise ValueError("Unknown time resolution requested")
 
-    generator_kwargs = {} if generator_kwargs is None else generator_kwargs
+        dset = ds_time.merge(dset)
+        time = dset["time"]
+        ntimes = len(time)
+    else:
+        ntimes = 1
 
+    # Step 3: generate the vertical coordinate
     if stats is not None:
         stats = [stats] if not isinstance(stats, list) else stats
         if len(stats) > 1:
             if fmt == "ncar":
                 dset = dset.merge(ncar_hybrid_coord())
                 lev = dset.lev
-            elif fmt == "gfdl":
+            elif fmt == "gfdl" :
                 if len(stats) == 19:
                     dset = dset.merge(gfdl_plev19_vertical_coord())
                     lev = dset.plev19
                 else:
                     dset = dset.merge(gfdl_vertical_coord())
                     lev = dset.pfull
+            elif fmt == "cmip" and grid == "tripolar":
+                dset = dset.merge(mom6_z_coord())
+                lev = dset.lev
+                assert len(stats) == len(lev),\
+                    f' Length of stats {data.shape[1]} must match number of levels {len(lev)}.'
+
+    # Step 4: define the synthetic data generator kernel
+    generator_kwargs = {} if generator_kwargs is None else generator_kwargs
+    if stats is not None:
         generator_kwargs["stats"] = stats
 
     assert generator in list(
@@ -146,16 +179,40 @@ def generate_synthetic_dataset(
     ), f"Unknown generator method: {generator}"
     generator = generators.__dict__[generator]
 
-    data = generators.generate_random_array(
-        xyshape, len(time), generator=generator, generator_kwargs=generator_kwargs
+    # Step 5: generate the synthetic data array
+    data = (
+        generators.generate_random_array(
+            xyshape, ntimes, generator=generator, generator_kwargs=generator_kwargs
+        )
+        if data is None
+        else data
     )
     data = data.squeeze()
 
-    if len(data.shape) == 4:
-        assert data.shape[1] == len(lev), "Length of stats must match number of levels"
-        dset[varname] = xr.DataArray(data, coords=(time, lev, lat, lon), attrs=attrs)
+    # Step 6: convert to Xarray DataArray by assigning coords
+    mask = dset["mask"].values if "mask" in dset.variables else 1.0
+    data = np.array(data * mask, dtype=np.float32)
+
+    if static is True:
+        if len(data.shape) == 4:
+            assert data.shape[1] == len(
+                lev
+            ),  f' Length of stats {data.shape[1]} must match number of levels {len(lev)}.'
+            dset[varname] = xr.DataArray(data, coords=(lev, lat, lon), attrs=attrs)
+        else:
+            dset[varname] = xr.DataArray(data, coords=(lat, lon), attrs=attrs)
     else:
-        dset[varname] = xr.DataArray(data, coords=(time, lat, lon), attrs=attrs)
+        if len(data.shape) == 4:
+            print(varname)
+            assert data.shape[1] == len(
+                lev
+            ), f' Length of stats {data.shape[1]} must match number of levels {len(lev)}.'
+            dset[varname] = xr.DataArray(
+                data, coords=(time, lev, lat, lon), attrs=attrs
+            )
+        else:
+            dset[varname] = xr.DataArray(data, coords=(time, lat, lon), attrs=attrs)
+        dset.set_coords(("lat", "lon"))
 
     if coords is not None:
         dset[coords["name"]] = xr.DataArray(coords["value"], attrs=coords["atts"])
@@ -164,7 +221,8 @@ def generate_synthetic_dataset(
     dset.attrs["convention"] = fmt
 
     if fmt == "cmip":
-        dset["bnds"].attrs = {"long_name": "vertex number"}
+        if "bnds" in dset.variables:
+            dset["bnds"].attrs = {"long_name": "vertex number"}
         cmip_global_atts = [
             "external_variables",
             "history",
@@ -214,6 +272,10 @@ def generate_synthetic_dataset(
 
         cmip_global_atts = {x: "" for x in cmip_global_atts}
         dset.attrs = {**dset.attrs, **cmip_global_atts}
+
+    # remove unused fields
+    if grid == "tripolar":
+        dset = dset.drop(["mask", "wet", "depth"])
 
     return dset
 

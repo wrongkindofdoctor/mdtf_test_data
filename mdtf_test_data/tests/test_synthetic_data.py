@@ -18,6 +18,8 @@ from mdtf_test_data.synthetic.time import xr_times_from_tuples
 from mdtf_test_data.synthetic.vertical import gfdl_plev19_vertical_coord
 from mdtf_test_data.synthetic.vertical import gfdl_vertical_coord
 from mdtf_test_data.synthetic.vertical import ncar_hybrid_coord
+from mdtf_test_data.synthetic.vertical import mom6_z_coord
+from mdtf_test_data.synthetic.vertical import mom6_rho2_coord
 
 __all__ = [
     "test_xr_times_from_tuples_ncar",
@@ -25,6 +27,7 @@ __all__ = [
     "test_ncar_hybrid_coord",
     "test_gfdl_plev19_vertical_coord",
     "test_gfdl_vertical_coord",
+    "test_mom6_z_coord",
     "test_generate_random_array",
     "test_generate_daily_time_axis",
     "test_generate_hourly_time_axis",
@@ -102,6 +105,20 @@ def test_gfdl_vertical_coord():
     assert np.allclose(float(result.pfull.sum()), 14932.053848)
     assert np.allclose(float(result.phalf.sum()), 15444.908725)
     pytest.gfdl_vert = result
+
+
+def test_mom6_z_coord():
+    result = mom6_z_coord()
+    assert isinstance(result, xr.Dataset)
+    assert np.allclose(float(result.z_l.sum()), 57085.0)
+    assert np.allclose(float(result.z_i.sum()), 60460.0)
+
+
+def test_mom6_rho2_coord():
+    result = mom6_rho2_coord()
+    assert isinstance(result, xr.Dataset)
+    assert np.allclose(float(result.rho2_l.sum()), 36176.125)
+    assert np.allclose(float(result.rho2_i.sum()), 37194.875)
 
 
 def test_generate_daily_time_axis():

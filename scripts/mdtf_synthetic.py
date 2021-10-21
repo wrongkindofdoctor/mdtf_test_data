@@ -143,20 +143,24 @@ def main():
             )
     if cli_info.convention == "CMIP":
         print("Importing CMIP variable information")
-        input_data = pkgr.resource_filename("mdtf_test_data", "config/cmip_day.yml")
-        input_data = read_yaml(input_data)
+        time_res = ["mon", "day"]
+        for t in time_res:
+            input_data = pkgr.resource_filename(
+                "mdtf_test_data", f"config/cmip_{t}.yml"
+            )
+            input_data = read_yaml(input_data)
 
-        print("Calling Synthetic Data Generator for CMIP data")
-        synthetic_main(
-            input_data,
-            DLAT=cli_info.dlat,
-            DLON=cli_info.dlon,
-            STARTYEAR=cli_info.startyear,
-            NYEARS=cli_info.nyears,
-            CASENAME="CMIP.Synthetic",
-            TIME_RES="day",
-            DATA_FORMAT="cmip",
-        )
+            print("Calling Synthetic Data Generator for CMIP data")
+            synthetic_main(
+                input_data,
+                DLAT=cli_info.dlat,
+                DLON=cli_info.dlon,
+                STARTYEAR=cli_info.startyear,
+                NYEARS=cli_info.nyears,
+                CASENAME="CMIP.Synthetic",
+                TIME_RES=t,
+                DATA_FORMAT="cmip",
+            )
 
 
 if __name__ == "__main__":
