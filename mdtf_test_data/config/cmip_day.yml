@@ -7,6 +7,7 @@ variables :
     - "huss"
     - "sfcWind"
     - "hfls"
+    - "ts"
 tas :
   atts :
     long_name : 'Near-Surface Air Temperature'
@@ -87,3 +88,14 @@ sfcWind:
     original_name: 'sfcWind'
   stats:
     - [ 6.75016, 1.806484 ]
+ts :
+  atts :
+    long_name : 'Surface Temperature'
+    units : 'K'
+    cell_methods : 'area: time: mean'
+    cell_measures : 'area: areacella'
+    standard_name : 'surface_temperature'
+    interp_method : 'conserve_order2'
+    original_name : 'ts'
+  stats :
+    - [299.31054, 2.530572]
