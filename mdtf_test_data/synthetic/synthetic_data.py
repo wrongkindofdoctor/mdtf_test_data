@@ -115,12 +115,12 @@ def generate_synthetic_dataset(
 
     # Step 1: set up the horizontal grid
     if grid == "tripolar":
-        dset = construct_tripolar_grid(
-            attr_fmt="ncar", retain_coords=True, add_attrs=True
-        )
+        dset = construct_tripolar_grid(attr_fmt=fmt, retain_coords=True, add_attrs=True)
         xyshape = dset["mask"].shape
-        lat = dset.nlat
-        lon = dset.nlon
+        latvar = "nlat" if "nlat" in list(dset.variables) else "yh"
+        lonvar = "nlon" if "nlon" in list(dset.variables) else "xh"
+        lat = dset[latvar]
+        lon = dset[lonvar]
     else:
         dset = construct_rect_grid(
             dlon, dlat, add_attrs=True, attr_fmt=fmt, bounds=do_bounds
