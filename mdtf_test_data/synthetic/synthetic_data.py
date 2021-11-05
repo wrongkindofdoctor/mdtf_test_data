@@ -156,7 +156,7 @@ def generate_synthetic_dataset(
             if fmt == "ncar":
                 dset = dset.merge(ncar_hybrid_coord())
                 lev = dset.lev
-            elif fmt == "gfdl" :
+            elif fmt == "gfdl":
                 if len(stats) == 19:
                     dset = dset.merge(gfdl_plev19_vertical_coord())
                     lev = dset.plev19
@@ -166,8 +166,9 @@ def generate_synthetic_dataset(
             elif fmt == "cmip" and grid == "tripolar":
                 dset = dset.merge(mom6_z_coord())
                 lev = dset.lev
-                assert len(stats) == len(lev),\
-                    f' Length of stats {data.shape[1]} must match number of levels {len(lev)}.'
+                assert len(stats) == len(
+                    lev
+                ), f" Length of stats {data.shape[1]} must match number of levels {len(lev)}."
 
     # Step 4: define the synthetic data generator kernel
     generator_kwargs = {} if generator_kwargs is None else generator_kwargs
@@ -197,7 +198,7 @@ def generate_synthetic_dataset(
         if len(data.shape) == 4:
             assert data.shape[1] == len(
                 lev
-            ),  f' Length of stats {data.shape[1]} must match number of levels {len(lev)}.'
+            ), f" Length of stats {data.shape[1]} must match number of levels {len(lev)}."
             dset[varname] = xr.DataArray(data, coords=(lev, lat, lon), attrs=attrs)
         else:
             dset[varname] = xr.DataArray(data, coords=(lat, lon), attrs=attrs)
@@ -206,7 +207,7 @@ def generate_synthetic_dataset(
             print(varname)
             assert data.shape[1] == len(
                 lev
-            ), f' Length of stats {data.shape[1]} must match number of levels {len(lev)}.'
+            ), f" Length of stats {data.shape[1]} must match number of levels {len(lev)}."
             dset[varname] = xr.DataArray(
                 data, coords=(time, lev, lat, lon), attrs=attrs
             )
