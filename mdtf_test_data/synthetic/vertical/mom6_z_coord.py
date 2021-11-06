@@ -123,7 +123,7 @@ def mom6_z_coord():
         "long_name": "depth",
         "units": "meters",
         "axis": "Z",
-        "positive": "down"
+        "positive": "down",
     }
 
     dset_out = xr.Dataset()
