@@ -4,7 +4,9 @@ channels:
 dependencies:
   - python
   - cftime
-  - envyaml
   - netcdf4
   - numpy
+  - pip
+  - pip:
+    - envyaml
   - xarray
