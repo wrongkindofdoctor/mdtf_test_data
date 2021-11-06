@@ -8,7 +8,6 @@ ___all__ = [
     "write_to_netcdf",
 ]
 
-import cftime
 import xarray as xr
 import numpy as np
 from mdtf_test_data.synthetic.horizontal import construct_rect_grid
@@ -248,7 +247,8 @@ def generate_synthetic_dataset(
             "institution",
             "institution_id",
             "license",
-            "mip_era" "nominal_resolution",
+            "mip_era",
+            "nominal_resolution",
             "parent_activity_id",
             "parent_experiment_id",
             "parent_mip_era",
@@ -268,7 +268,8 @@ def generate_synthetic_dataset(
             "tracking_id",
             "variable_id",
             "variant_info",
-            "references" "variant_label",
+            "references",
+            "variant_label",
         ]
 
         cmip_global_atts = {x: "" for x in cmip_global_atts}

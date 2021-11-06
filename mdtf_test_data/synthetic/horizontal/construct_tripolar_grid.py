@@ -2,16 +2,10 @@
 
 __all__ = ["construct_tripolar_grid"]
 
-import warnings
 
 import numpy as np
 import xarray as xr
 import pkg_resources as pkgr
-
-try:
-    import xesmf as xe
-except:
-    warnings.warn("Unable to load `xesmf`. Regridding functionality will not work.")
 
 
 def construct_tripolar_grid(

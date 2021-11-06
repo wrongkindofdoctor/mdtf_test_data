@@ -4,14 +4,7 @@ ___all__ = [
     "mom6_z_coord",
 ]
 
-import cftime
 import xarray as xr
-import numpy as np
-import mdtf_test_data.generators as generators
-
-from mdtf_test_data.synthetic.time import generate_monthly_time_axis
-from mdtf_test_data.synthetic.time import generate_daily_time_axis
-from mdtf_test_data.synthetic.time import generate_hourly_time_axis
 
 
 def mom6_z_coord():

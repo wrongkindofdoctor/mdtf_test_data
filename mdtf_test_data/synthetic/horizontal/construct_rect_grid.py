@@ -7,11 +7,6 @@ import warnings
 import numpy as np
 import xarray as xr
 
-try:
-    import xesmf as xe
-except:
-    warnings.warn("Unable to load `xesmf`. Regridding functionality will not work.")
-
 
 def construct_rect_grid(dlon, dlat, add_attrs=False, attr_fmt="ncar", bounds=False):
     """Generate a rectilinear grid based on values of dx and dy
