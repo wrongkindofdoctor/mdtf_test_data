@@ -1,0 +1,10 @@
+name: testing
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - cftime
+  - nvyaml
+  - netcdf4
+  - numpy
+  - xarray
