@@ -276,7 +276,7 @@ def generate_synthetic_dataset(
 
     # remove unused fields
     if grid == "tripolar":
-        dset = dset.drop(["mask", "wet", "depth"])
+        dset = dset.drop_vars(["mask", "wet", "depth"])
 
     return dset
 

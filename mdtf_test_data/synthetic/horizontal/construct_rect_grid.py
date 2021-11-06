@@ -60,7 +60,7 @@ def construct_rect_grid(dlon, dlat, add_attrs=False, attr_fmt="ncar", bounds=Fal
         dset["lat_bnds"] = xr.DataArray(lat_bnds, coords=(dset.lat, ("bnds", bnds)))
         dset["lon_bnds"] = xr.DataArray(lon_bnds, coords=(dset.lon, ("bnds", bnds)))
 
-        dset = dset.drop("bnds")
+        dset = dset.drop_vars(["bnds"])
 
     if attr_fmt == "ncar":
         dset["lat"].attrs = (
