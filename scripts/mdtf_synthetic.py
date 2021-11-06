@@ -100,6 +100,22 @@ def main():
                 "test_generators failed. Check output log for details. Exiting program."
             )
             sys.exit(retcode_2)
+        retcode_3 = pytest.main(
+            ["-x", f"{MDTF_PACKAGE_PATH}/tests/test_construct_tripolar_grid.py"]
+        )
+        if retcode_3 != 0:
+            print(
+                "test_construct_tripolar_grid failed. Check output log for details. Exiting program."
+            )
+            sys.exit(retcode_3)
+        retcode_4 = pytest.main(
+            ["-x", f"{MDTF_PACKAGE_PATH}/tests/test_construct_rect_grid.py"]
+        )
+        if retcode_4 != 0:
+            print(
+                "test_construct_rect_grid failed. Check output log for details. Exiting program."
+            )
+            sys.exit(retcode_4)
 
     if cli_info.convention == "GFDL":
         print("Importing GFDL variable information")
