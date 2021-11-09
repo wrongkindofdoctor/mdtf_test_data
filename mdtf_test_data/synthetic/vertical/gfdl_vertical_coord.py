@@ -4,10 +4,8 @@ ___all__ = [
     "gfdl_vertical_coord",
 ]
 
-import cftime
 import xarray as xr
 import numpy as np
-import mdtf_test_data.generators as generators
 
 
 def gfdl_vertical_coord():

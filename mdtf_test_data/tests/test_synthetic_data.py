@@ -199,6 +199,22 @@ def test_generate_synthetic_dataset_2():
     assert len(result.time) == 8760
 
 
+def test_generate_synthetic_dataset_3():
+    stats = [(10.0, 1.0) for x in range(0, 7)]
+    result = generate_synthetic_dataset(
+        None,
+        None,
+        1,
+        1,
+        "dummy_var_3",
+        timeres="mon",
+        attrs={"test_attribute": "some_value"},
+        fmt="ncar",
+        grid="tripolar",
+    )
+    assert isinstance(result, xr.Dataset)
+
+
 def test_dataset_stats():
     outfile = ".pytest.dummy.out.nc"
 

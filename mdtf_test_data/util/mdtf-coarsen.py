@@ -54,7 +54,7 @@ if __name__ == "__main__":
     args = parse()
     _infile = os.path.abspath(args.infile)
     print(_infile)
-    dset = xr.open_dataset(_infile,use_cftime=True)
+    dset = xr.open_dataset(_infile, use_cftime=True)
     dset_out = regrid_lat_lon_dataset(
         dset, dlon=args.dx, dlat=args.dy, method=args.regrid_method
     )

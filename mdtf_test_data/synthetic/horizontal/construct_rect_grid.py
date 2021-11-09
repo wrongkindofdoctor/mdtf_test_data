@@ -7,11 +7,6 @@ import warnings
 import numpy as np
 import xarray as xr
 
-try:
-    import xesmf as xe
-except:
-    warnings.warn("Unable to load `xesmf`. Regridding functionality will not work.")
-
 
 def construct_rect_grid(dlon, dlat, add_attrs=False, attr_fmt="ncar", bounds=False):
     """Generate a rectilinear grid based on values of dx and dy
@@ -60,7 +55,7 @@ def construct_rect_grid(dlon, dlat, add_attrs=False, attr_fmt="ncar", bounds=Fal
         dset["lat_bnds"] = xr.DataArray(lat_bnds, coords=(dset.lat, ("bnds", bnds)))
         dset["lon_bnds"] = xr.DataArray(lon_bnds, coords=(dset.lon, ("bnds", bnds)))
 
-        dset = dset.drop("bnds")
+        dset = dset.drop_vars(["bnds"])
 
     if attr_fmt == "ncar":
         dset["lat"].attrs = (

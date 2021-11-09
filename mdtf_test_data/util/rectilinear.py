@@ -5,14 +5,11 @@ __all__ = ["regrid_lat_lon_dataset"]
 
 import warnings
 
-import numpy as np
-import xarray as xr
-
 from mdtf_test_data.synthetic.horizontal import construct_rect_grid
 
 try:
     import xesmf as xe
-except:
+except Exception as e:
     warnings.warn("Unable to load `xesmf`. Regridding functionality will not work.")
 
 

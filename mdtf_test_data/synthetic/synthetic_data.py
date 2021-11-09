@@ -8,7 +8,6 @@ ___all__ = [
     "write_to_netcdf",
 ]
 
-import cftime
 import xarray as xr
 import numpy as np
 from mdtf_test_data.synthetic.horizontal import construct_rect_grid
@@ -115,12 +114,12 @@ def generate_synthetic_dataset(
 
     # Step 1: set up the horizontal grid
     if grid == "tripolar":
-        dset = construct_tripolar_grid(
-            attr_fmt="ncar", retain_coords=True, add_attrs=True
-        )
+        dset = construct_tripolar_grid(attr_fmt=fmt, retain_coords=True, add_attrs=True)
         xyshape = dset["mask"].shape
-        lat = dset.nlat
-        lon = dset.nlon
+        latvar = "nlat" if "nlat" in list(dset.variables) else "yh"
+        lonvar = "nlon" if "nlon" in list(dset.variables) else "xh"
+        lat = dset[latvar]
+        lon = dset[lonvar]
     else:
         dset = construct_rect_grid(
             dlon, dlat, add_attrs=True, attr_fmt=fmt, bounds=do_bounds
@@ -156,7 +155,7 @@ def generate_synthetic_dataset(
             if fmt == "ncar":
                 dset = dset.merge(ncar_hybrid_coord())
                 lev = dset.lev
-            elif fmt == "gfdl" :
+            elif fmt == "gfdl":
                 if len(stats) == 19:
                     dset = dset.merge(gfdl_plev19_vertical_coord())
                     lev = dset.plev19
@@ -166,8 +165,9 @@ def generate_synthetic_dataset(
             elif fmt == "cmip" and grid == "tripolar":
                 dset = dset.merge(mom6_z_coord())
                 lev = dset.lev
-                assert len(stats) == len(lev),\
-                    f' Length of stats {data.shape[1]} must match number of levels {len(lev)}.'
+                assert len(stats) == len(
+                    lev
+                ), f" Length of stats {data.shape[1]} must match number of levels {len(lev)}."
 
     # Step 4: define the synthetic data generator kernel
     generator_kwargs = {} if generator_kwargs is None else generator_kwargs
@@ -197,7 +197,7 @@ def generate_synthetic_dataset(
         if len(data.shape) == 4:
             assert data.shape[1] == len(
                 lev
-            ),  f' Length of stats {data.shape[1]} must match number of levels {len(lev)}.'
+            ), f" Length of stats {data.shape[1]} must match number of levels {len(lev)}."
             dset[varname] = xr.DataArray(data, coords=(lev, lat, lon), attrs=attrs)
         else:
             dset[varname] = xr.DataArray(data, coords=(lat, lon), attrs=attrs)
@@ -206,7 +206,7 @@ def generate_synthetic_dataset(
             print(varname)
             assert data.shape[1] == len(
                 lev
-            ), f' Length of stats {data.shape[1]} must match number of levels {len(lev)}.'
+            ), f" Length of stats {data.shape[1]} must match number of levels {len(lev)}."
             dset[varname] = xr.DataArray(
                 data, coords=(time, lev, lat, lon), attrs=attrs
             )
@@ -247,7 +247,8 @@ def generate_synthetic_dataset(
             "institution",
             "institution_id",
             "license",
-            "mip_era" "nominal_resolution",
+            "mip_era",
+            "nominal_resolution",
             "parent_activity_id",
             "parent_experiment_id",
             "parent_mip_era",
@@ -267,7 +268,8 @@ def generate_synthetic_dataset(
             "tracking_id",
             "variable_id",
             "variant_info",
-            "references" "variant_label",
+            "references",
+            "variant_label",
         ]
 
         cmip_global_atts = {x: "" for x in cmip_global_atts}
@@ -275,7 +277,7 @@ def generate_synthetic_dataset(
 
     # remove unused fields
     if grid == "tripolar":
-        dset = dset.drop(["mask", "wet", "depth"])
+        dset = dset.drop_vars(["mask", "wet", "depth"])
 
     return dset
 
