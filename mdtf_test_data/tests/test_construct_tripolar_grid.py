@@ -96,9 +96,10 @@ def test_construct_tripolar_grid_c(retain_coords):
         assert result.wet_c.sum() == 1426.0
 
 
-def test_construct_tripolar_grid_ncar():
+@pytest.mark.parametrize("attr_fmt", [("ncar"), ("cmip")])
+def test_construct_tripolar_grid_ncar(attr_fmt):
     result = construct_tripolar_grid(
-        attr_fmt="ncar", add_attrs=True, retain_coords=True
+        attr_fmt=attr_fmt, add_attrs=True, retain_coords=True
     )
     assert sorted(list(result.coords)) == ["nlat", "nlon"]
     assert sorted(list(result.dims)) == ["nlat", "nlon"]
