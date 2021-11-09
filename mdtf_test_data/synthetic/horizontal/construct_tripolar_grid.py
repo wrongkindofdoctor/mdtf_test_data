@@ -33,6 +33,9 @@ def construct_tripolar_grid(
     ds_in = pkgr.resource_filename("mdtf_test_data", "resources/ocean_static_5deg.nc")
     ds_in = xr.open_dataset(ds_in)
 
+    # -- if CMIP format is requested, use CESM version as output
+    attr_fmt = "ncar" if attr_fmt == "cmip" else attr_fmt
+
     if point_type == "t":
         lat = ds_in["geolat"]
         lon = ds_in["geolon"]
