@@ -64,7 +64,7 @@ def cmip_vertical_coord():
 
     dset_out = xr.Dataset()
     dset_out["plev"] = xr.DataArray(
-        lev, dims={"plev": plev}, coords={"plev": plev}, attrs=plev_attrs
+        plev, dims={"plev": plev}, coords={"plev": plev}, attrs=plev_attrs
     )
 
     return dset_out

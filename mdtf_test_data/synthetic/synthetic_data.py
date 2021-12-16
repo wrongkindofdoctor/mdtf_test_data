@@ -208,7 +208,7 @@ def generate_synthetic_dataset(
             dset[varname] = xr.DataArray(data, coords=(lat, lon), attrs=attrs)
     else:
         if len(data.shape) == 4:
-            print(varname)
+            #print(varname)
             assert data.shape[1] == len(
                 lev
             ), f" Length of stats {data.shape[1]} must match number of levels {len(lev)}."
