@@ -22,6 +22,7 @@ from mdtf_test_data.synthetic.vertical import gfdl_plev19_vertical_coord
 from mdtf_test_data.synthetic.vertical import gfdl_vertical_coord
 from mdtf_test_data.synthetic.vertical import ncar_hybrid_coord
 from mdtf_test_data.synthetic.vertical import mom6_z_coord
+from mdtf_test_data.synthetic.vertical import cmip_vertical_coord
 
 
 def dataset_stats(filename, var=None, limit=None):
@@ -162,9 +163,13 @@ def generate_synthetic_dataset(
                 else:
                     dset = dset.merge(gfdl_vertical_coord())
                     lev = dset.pfull
-            elif fmt == "cmip" and grid == "tripolar":
-                dset = dset.merge(mom6_z_coord())
-                lev = dset.lev
+            elif fmt == "cmip":
+                if grid == "tripolar":
+                    dset = dset.merge(mom6_z_coord())
+                    lev = dset.lev
+                else:
+                    dset = dset.merge(cmip_vertical_coord())
+                    lev = dset.plev
                 assert len(stats) == len(
                     lev
                 ), f" Length of stats {data.shape[1]} must match number of levels {len(lev)}."

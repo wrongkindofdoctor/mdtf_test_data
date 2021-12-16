@@ -1,3 +1,4 @@
+from .cmip_vertical_coord import cmip_vertical_coord
 from .gfdl_plev19_vertical_coord import gfdl_plev19_vertical_coord
 from .gfdl_vertical_coord import gfdl_vertical_coord
 from .mom6_z_coord import mom6_z_coord
