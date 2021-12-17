@@ -22,6 +22,7 @@ variables :
     - "rsut"
     - "rlds"
     - "rlut"
+    - "rlus"
 
 areacello :
   atts :
