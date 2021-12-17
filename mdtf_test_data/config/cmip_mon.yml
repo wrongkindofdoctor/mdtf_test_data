@@ -10,18 +10,19 @@ variables :
     - "ua"
     - "va"
     - "ta"
-   # - "hus"
-   # - "wap"
-   #- "pr"
-   # - "ts"
-   # - "hfss"
-   # - "hfls"
-  #  - "rsus"
-   # - "rsds"
-  #  - "rsdt"
-  #  - "rsut"
-  #  - "rlds"
-   # - "rlut"
+    - "hus"
+    - "wap"
+    - "pr"
+    - "ts"
+    - "hfss"
+    - "hfls"
+    - "rsus"
+    - "rsds"
+    - "rsdt"
+    - "rsut"
+    - "rlds"
+    - "rlut"
+
 areacello :
   atts :
     cell_methods : "area: sum"
@@ -382,7 +383,6 @@ ua :
     - [ 3.5169997215270996, 6.718076705932617 ]
     - [ 5.064070701599121, 7.533307075500488 ]
 
-
 ta :
   atts :
     long_name" : "air_temperature"
@@ -393,36 +393,267 @@ ta :
     standard_name" : "air_temperature"
     interp_method" : "conserve_order2"
     grid: "standard"
-  stats :
-    - [230.75917, 8.456115]
-    - [227.636253, 5.954967498779297]
-    - [213.154672, 6.151541233062744]
-    - [216.603524, 6.718076705932617]
-    - [214.698324, 7.533307075500488]
-    - [213.4656466, 8.621078491210938]
-    - [218.45895, 5.132266998291016]
-    - [215.769779, 7.243420600891113]
-    - [216.42525, 8.345138549804688]
-    - [219.137928009033203, 4.860307693481445]
-    - [214.190452575683594, 6.078526496887207]
-    - [219.251249313354492, 7.972661972045898]
-    - [224.768674850463867, 8.529572486877441]
-    - [226.316129684448242, 6.369094848632812]
-    - [227.139902591705322, 5.318357467651367]
-    - [229.689526557922363, 8.68798065185547]
-    - [235.583802700042725, 10.241039276123047]
-    - [236.023049354553223, 5.71630859375]
-    - [239.582330703735352, 6.460975646972656]
-    - [242.064070701599121, 7.533307075500488 ]
-    - [248.97215461730957, 8.621078491210938 ]
-    - [253.392412185668945, 9.132266998291016 ]
-    - [257.26109790802002, 6.243420600891113 ]
-    - [264.543569564819336, 5.345138549804688 ]
-    - [267.137928009033203, 5.860307693481445 ]
-    - [268.190452575683594, 7.078526496887207 ]
-    - [268.251249313354492, 10.972661972045898 ]
-    - [270.768674850463867, 6.529572486877441 ]
-    - [271.316129684448242, 3.369094848632812 ]
-    - [272.139902591705322, 6.318357467651367 ]
-    - [273.5169997215270996, 6.718076705932617 ]
-    - [273.064070701599121, 7.533307075500488 ]
+  stats:
+    - [ 230.75917, 8.456115 ]
+    - [ 227.636253, 5.954967498779297 ]
+    - [ 213.154672, 6.151541233062744 ]
+    - [ 216.603524, 6.718076705932617 ]
+    - [ 214.698324, 7.533307075500488 ]
+    - [ 213.4656466, 8.621078491210938 ]
+    - [ 218.45895, 5.132266998291016 ]
+    - [ 215.769779, 7.243420600891113 ]
+    - [ 216.42525, 8.345138549804688 ]
+    - [ 219.137928009033203, 4.860307693481445 ]
+    - [ 214.190452575683594, 6.078526496887207 ]
+    - [ 219.251249313354492, 7.972661972045898 ]
+    - [ 224.768674850463867, 8.529572486877441 ]
+    - [ 226.316129684448242, 6.369094848632812 ]
+    - [ 227.139902591705322, 5.318357467651367 ]
+    - [ 229.689526557922363, 8.68798065185547 ]
+    - [ 235.583802700042725, 10.241039276123047 ]
+    - [ 236.023049354553223, 5.71630859375 ]
+    - [ 239.582330703735352, 6.460975646972656 ]
+    - [ 242.064070701599121, 7.533307075500488 ]
+    - [ 248.97215461730957, 8.621078491210938 ]
+    - [ 253.392412185668945, 9.132266998291016 ]
+    - [ 257.26109790802002, 6.243420600891113 ]
+    - [ 264.543569564819336, 5.345138549804688 ]
+    - [ 267.137928009033203, 5.860307693481445 ]
+    - [ 268.190452575683594, 7.078526496887207 ]
+    - [ 268.251249313354492, 10.972661972045898 ]
+    - [ 270.768674850463867, 6.529572486877441 ]
+    - [ 271.316129684448242, 3.369094848632812 ]
+    - [ 272.139902591705322, 6.318357467651367 ]
+    - [ 273.5169997215270996, 6.718076705932617 ]
+    - [ 273.064070701599121, 7.533307075500488 ]
+
+hus:
+  atts:
+    long_name": "specific_humidity"
+    units": "1"
+    cell_methods": "time : mean"
+    cell_measures": "area : area"
+    time_avg_info": "average_T1,average_T2,average_DT"
+    standard_name": "specific_humidity"
+    interp_method": "conserve_order2"
+    grid: "standard"
+  stats:
+    - [ 3.778116e-06, 1.83095235e-7 ]
+    - [ 3.771572e-06, 1.698762e-7 ]
+    - [ 3.573253e-06, 1.295464e-7 ]
+    - [ 3.456334e-06, 1.842352e-7 ]
+    - [ 3.44712e-06, 1.069678e-7 ]
+    - [ 3.483308e-06, 1.295464e-7 ]
+    - [ 0.003362403, 3.15677456e-7 ]
+    - [ 0.003317381, 5.105846e-7 ]
+    - [ 0.003740472, 1.3259046e-7 ]
+    - [ 0.0033594, 2.632877634e-7 ]
+    - [ 0.003801943, 1.04987646e-7 ]
+    - [ 0.00358355, 1.10684653e-7 ]
+    - [ 0.004977324, 1.2348567e-7 ]
+    - [ 0.004477266, 1.79684754e-7 ]
+    - [ 0.004178188, 1.5489754e-7 ]
+    - [ 0.005138075, 3.295464e-7 ]
+    - [ 0.005263991, 2.295464e-7 ]
+    - [ 0.0040496, 4.295464e-7 ]
+    - [ 0.00523458, 1.45746543e-7 ]
+    - [ 0.00568023, 3.36094364e-7 ]
+    - [ 0.005450083, 2.3402952e-7 ]
+    - [ 0.004543417, 6.1042514e-7 ]
+    - [ 0.006067676, 1.359468235e-7 ]
+    - [ 0.005495501, 1.659467825e-7 ]
+    - [ 0.004482094, 1.346576542e-7 ]
+    - [ 0.004700892, 3.789084565e-7 ]
+    - [ 0.005903749, 2.30965436e-7 ]
+    - [ 0.004486129, 1.54735695e-7 ]
+    - [ 0.006600861, 4.15983623e-7 ]
+    - [ 0.00553043, 2.4369352e-7 ]
+    - [ 0.006856237, 1.34675678757e-7 ]
+    - [ 0.006048811, 3.0468306e-7 ]
+
+wap:
+  atts:
+    long_name": "lagrangian_tendency_of_air_pressure"
+    units": "Pa s-1"
+    cell_methods": "time : mean"
+    cell_measures": "area : area"
+    time_avg_info": "average_T1,average_T2,average_DT"
+    standard_name": "lagrangian_tendency_of_air_pressure"
+    interp_method": "conserve_order2"
+    grid: "standard"
+  stats:
+    - [ -0.0002187394, 1.83095235e-5 ]
+    - [ -7.351468e-05, 1.698762e-5 ]
+    - [ 0.03285702, 1.295464e-3 ]
+    - [ -0.03313616, 1.842352e-3 ]
+    - [ 0.03486002, 1.069678e-3 ]
+    - [ 0.0005694181, 1.295464e-4 ]
+    - [ -0.0364063, 3.15677456e-3 ]
+    - [ 0.008867982, 5.105846e-4 ]
+    - [ -0.02502061, 1.3259046e-3 ]
+    - [ 0.03352945, 2.632877634e-3 ]
+    - [ -0.03433953, 1.04987646e-3 ]
+    - [ -0.03987761, 1.10684653e-3 ]
+    - [ -0.001322439, 1.2348567e-4 ]
+    - [ -0.054754026, 1.79684754e-3 ]
+    - [ 0.03385032, 1.30583276e-3 ]
+    - [ 0.02555078, 1.12432548e-3 ]
+    - [ 0.03697666, 1.02359214e-3 ]
+    - [ 0.02294494, 1.0258394e-3 ]
+    - [ -0.02019569, 1.502490235e-3 ]
+    - [ 0.02308778, 1.3945843e-3 ]
+    - [ -0.003148001, 1.4079459e-4]
+    - [ -0.008318922, 1.579054e-3 ]
+    - [ -0.01142756, 1.034964e-3]
+    - [ -0.004965423, 1.0235934e-5 ]
+    - [ -0.002604497, 1.2059127e-4 ]
+    - [ 9.857797e-05, 2.43325654e-5 ]
+    - [ -0.001189804, 1.580345e-4 ]
+    - [ -0.0006446782, 1.234222e-5 ]
+    - [ -0.0002958179, 1.250396e-5 ]
+    - [ 3.899816e-06, 0.2532563e-6 ]
+    - [ -8.875068e-05, 1.36036e-6 ]
+    - [ 0.0003208432, 1.25543e-4 ]
+
+pr:
+  atts:
+    long_name": "precipitation_flux"
+    units": "kg m-2 s-1"
+    cell_methods": "time : mean"
+    cell_measures": "area : area"
+    time_avg_info": "average_T1,average_T2,average_DT"
+    standard_name": "precipitation_flux"
+    interp_method": "conserve_order2"
+    grid: "standard"
+  stats:
+    - [ 4.148527e-06, 1.0358436e-6]
+
+ts:
+  atts:
+    long_name": "surface_temperature"
+    units": "K"
+    cell_methods": "time : mean"
+    cell_measures": "area : area"
+    time_avg_info": "average_T1,average_T2,average_DT"
+    standard_name": "surface_temperature"
+    interp_method": "conserve_order2"
+    grid: "standard"
+  stats:
+    - [246.7526, 2.23567]
+
+hfss:
+  atts:
+    long_name": "surface_upward_sensible_heat_flux"
+    units": "W m-2"
+    cell_methods": "time : mean"
+    cell_measures": "area : area"
+    time_avg_info": "average_T1,average_T2,average_DT"
+    standard_name": "surface_upward_sensible_heat_flux"
+    interp_method": "conserve_order2"
+    grid: "standard"
+  stats:
+    - [-5.417094, 12.02543647]
+
+hfls:
+  atts:
+    long_name": "surface_upward_latent_heat_flux"
+    units": "W m-2"
+    cell_methods": "time : mean"
+    cell_measures": "area : area"
+    time_avg_info": "average_T1,average_T2,average_DT"
+    standard_name": "surface_upward_latent_heat_flux"
+    interp_method": "conserve_order2"
+    grid: "standard"
+  stats:
+    - [ 0.3687294, 1.504234 ]
+
+rsus:
+  atts:
+    long_name": "surface_upwelling_shortwave_flux_in_air"
+    units": "W m-2"
+    cell_methods": "time : mean"
+    cell_measures": "area : area"
+    time_avg_info": "average_T1,average_T2,average_DT"
+    standard_name": "surface_upwelling_shortwave_flux_in_air"
+    interp_method": "conserve_order2"
+    grid: "standard"
+  stats:
+    - [ 12.47399, 5.2604957 ]
+
+rsds:
+  atts:
+    long_name": "surface_downwelling_shortwave_flux_in_air"
+    units": "W m-2"
+    cell_methods": "time : mean"
+    cell_measures": "area : area"
+    time_avg_info": "average_T1,average_T2,average_DT"
+    standard_name": "surface_downwelling_shortwave_flux_in_air"
+    interp_method": "conserve_order2"
+    grid: "standard"
+  stats:
+    - [ 211.7937, 50.6793543 ]
+
+rsdt:
+  atts:
+    long_name": "toa_incoming_shortwave_flux"
+    units": "W m-2"
+    cell_methods": "time : mean"
+    cell_measures": "area : area"
+    time_avg_info": "average_T1,average_T2,average_DT"
+    standard_name": "toa_incoming_shortwave_flux"
+    interp_method": "conserve_order2"
+    grid: "standard"
+  stats:
+    - [ 275.8723, 60.636432 ]
+
+rsut:
+  atts:
+    long_name": "toa_outgoing_shortwave_flux"
+    units": "W m-2"
+    cell_methods": "time : mean"
+    cell_measures": "area : area"
+    time_avg_info": "average_T1,average_T2,average_DT"
+    standard_name": "toa_outgoing_shortwave_flux"
+    interp_method": "conserve_order2"
+    grid: "standard"
+  stats:
+    - [ 182.8282, 35.033565 ]
+
+rlus:
+  atts:
+    long_name": "surface_upwelling_longwave_flux_in_air"
+    units": "W m-2"
+    cell_methods": "time : mean"
+    cell_measures": "area : area"
+    time_avg_info": "average_T1,average_T2,average_DT"
+    standard_name": "surface_upwelling_longwave_flux_in_air"
+    interp_method": "conserve_order2"
+    grid: "standard"
+  stats:
+    - [ 370.3353, 55.234536436 ]
+
+rlds:
+  atts:
+    long_name": "surface_downwelling_longwave_flux_in_air"
+    units": "W m-2"
+    cell_methods": "time : mean"
+    cell_measures": "area : area"
+    time_avg_info": "average_T1,average_T2,average_DT"
+    standard_name": "surface_downwelling_longwave_flux_in_air"
+    interp_method": "conserve_order2"
+    grid: "standard"
+  stats:
+    - [ 99.57081, 30.67465346 ]
+
+rlut:
+  atts:
+    long_name": "toa_outgoing_longwave_flux"
+    units": "W m-2"
+    cell_methods": "time : mean"
+    cell_measures": "area : area"
+    time_avg_info": "average_T1,average_T2,average_DT"
+    standard_name": "toa_outgoing_longwave_flux"
+    interp_method": "conserve_order2"
+    grid: "standard"
+  stats:
+    - [ 203.8542, 3.38437683]

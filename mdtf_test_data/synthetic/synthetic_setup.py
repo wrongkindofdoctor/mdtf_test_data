@@ -66,7 +66,7 @@ def synthetic_main(
     # parse the yaml dictionary
     var_names = yaml_dict["variables.name"]
     # -- Create Data
-    print("Generating data with time resolution of ", TIME_RES)
+    print("Generating data")
     for v in var_names:
         static = (
             yaml_dict[v + ".static"]
