@@ -20,6 +20,7 @@ from mdtf_test_data.synthetic.vertical import gfdl_vertical_coord
 from mdtf_test_data.synthetic.vertical import ncar_hybrid_coord
 from mdtf_test_data.synthetic.vertical import mom6_z_coord
 from mdtf_test_data.synthetic.vertical import mom6_rho2_coord
+from mdtf_test_data.synthetic.vertical import cmip_vertical_coord
 
 __all__ = [
     "test_xr_times_from_tuples_ncar",
@@ -27,13 +28,14 @@ __all__ = [
     "test_ncar_hybrid_coord",
     "test_gfdl_plev19_vertical_coord",
     "test_gfdl_vertical_coord",
+    "test_cmip_vertical_coord",
     "test_mom6_z_coord",
     "test_generate_random_array",
     "test_generate_daily_time_axis",
     "test_generate_hourly_time_axis",
     "test_generate_monthly_time_axis",
     "test_generate_synthetic_dataset",
-    "test_dataset_stats",
+    "test_dataset_stats"
 ]
 
 
@@ -44,7 +46,8 @@ def pytest_namespace():
         "ncar_hybrid": None,
         "gfdl_plev19": None,
         "gfdl_vert": None,
-        "dummy_dset": None,
+        "cmip_vert": None,
+        "dummy_dset": None
     }
 
 
@@ -105,6 +108,13 @@ def test_gfdl_vertical_coord():
     assert np.allclose(float(result.pfull.sum()), 14932.053848)
     assert np.allclose(float(result.phalf.sum()), 15444.908725)
     pytest.gfdl_vert = result
+
+
+def test_cmip_vertical_coord():
+    result = cmip_vertical_coord()
+    assert isinstance(result, xr.Dataset)
+    assert np.allclose(float(result.plev.sum()), 15030.0)
+    pytest.cmip_vert = result
 
 
 def test_mom6_z_coord():
