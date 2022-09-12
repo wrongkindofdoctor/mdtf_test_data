@@ -23,6 +23,7 @@ variables :
     - "rlds"
     - "rlut"
     - "rlus"
+    - "tas"
 
 areacello :
   atts :
@@ -541,6 +542,19 @@ ts:
     grid: "standard"
   stats:
     - [246.7526, 2.23567]
+
+tas:
+  atts:
+    long_name": "near_surface_air_temperature"
+    units": "K"
+    cell_methods": "time : mean"
+    cell_measures": "area : area"
+    time_avg_info": "average_T1,average_T2,average_DT"
+    standard_name": "air_temperature"
+    interp_method": "conserve_order2"
+    grid: "standard"
+  stats:
+    - [278.5208, 2.1739]
 
 hfss:
   atts:
