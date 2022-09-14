@@ -68,6 +68,7 @@ def synthetic_main(
     # -- Create Data
     print("Generating data")
     for v in var_names:
+        print("cmip ",v)
         static = (
             yaml_dict[v + ".static"]
             if str(v + ".static") in list(yaml_dict.keys())
@@ -113,7 +114,7 @@ def synthetic_main(
             return xr.open_dataset(_ds)["areacello"].values
 
         # Load the ocean static file
-        if static:
+        if static and grid is "tripolar":
             if str(v + ".source") in list(yaml_dict.keys()):
                 staticfilepath = yaml_dict[v + ".source.filename"]
                 if os.path.exists(staticfilepath):
