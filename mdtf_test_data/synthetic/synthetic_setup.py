@@ -113,7 +113,7 @@ def synthetic_main(
             return xr.open_dataset(_ds)["areacello"].values
 
         # Load the ocean static file
-        if static:
+        if static and grid is "tripolar":
             if str(v + ".source") in list(yaml_dict.keys()):
                 staticfilepath = yaml_dict[v + ".source.filename"]
                 if os.path.exists(staticfilepath):
