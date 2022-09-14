@@ -68,7 +68,6 @@ def synthetic_main(
     # -- Create Data
     print("Generating data")
     for v in var_names:
-        print("cmip ",v)
         static = (
             yaml_dict[v + ".static"]
             if str(v + ".static") in list(yaml_dict.keys())
