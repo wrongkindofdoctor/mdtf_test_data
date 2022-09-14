@@ -25,6 +25,7 @@ variables :
     - "rlut"
     - "rlus"
     - "tas"
+    - "siconc"
 
 areacella :
   atts :
@@ -269,6 +270,27 @@ thetao:
     - [ 14.171214, 1.202383 ]
     - [ 13.806399, 2.840008 ]
     - [ 13.422476, 3.461085 ]
+
+siconc :
+  atts :
+    cell_methods: 'time: mean'
+    comment : 'Area fraction of grid cell covered by sea ice'
+    coordinates : "lat lon"
+    frequency : 'mon'
+    id : 'siconc'
+    long_name : 'Sea-ice Area Percentage (Ocean Grid)'
+    realm : 'ocean'
+    standard_name : 'sea_ice_area_fraction'
+    time : 'time'
+    time_label : 'time-mean'
+    time_title : 'Temporal mean'
+    title : 'sea ice area percentage'
+    type : 'real'
+    units : '%'
+    variable_id : 'siconc'
+  grid : "standard"
+  stats :
+    - [50, 25]
 
 zg :
   atts:
